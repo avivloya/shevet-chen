@@ -1,0 +1,201 @@
+/* Shevet Chen: connects the app to Firebase (sign-in + database).
+   The app was first built as a claude.ai Artifact. It talks to a small
+   `window.claude.use('db' | 'user')` API, which this file recreates on top of
+   Firebase Auth and Cloud Firestore, so the app code itself stays the same. */
+(function () {
+  var cfg = window.FIREBASE_CONFIG;
+  var configured = cfg && cfg.apiKey && cfg.apiKey.indexOf('PASTE') !== 0;
+
+  /* ---------- small UI helpers for the sign-in screen ---------- */
+  var css = document.createElement('style');
+  css.textContent =
+    '#fbGate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:#f6f1e8;font-family:Heebo,system-ui,sans-serif;color:#1e3a2f}' +
+    '#fbGate .box{background:#fff;border:1px solid #e9e1d6;border-radius:20px;padding:32px 28px;max-width:380px;width:100%;box-shadow:0 1px 2px rgba(30,58,47,.04),0 8px 24px rgba(30,58,47,.06);text-align:center}' +
+    '#fbGate .logo{display:inline-block;background:#2f6b52;color:#fff;border-radius:999px;padding:7px 18px;font-family:"Frank Ruhl Libre",Georgia,serif;font-size:1.25rem;margin-bottom:6px}' +
+    '#fbGate .sub{color:#6f8178;font-size:.85rem;margin-bottom:22px}' +
+    '#fbGate button{font:inherit;cursor:pointer;border-radius:999px;padding:11px 18px;width:100%;border:1px solid #e9e1d6;background:#fff;color:#1e3a2f;margin-top:8px}' +
+    '#fbGate button.primary{background:#2f6b52;border-color:#2f6b52;color:#fff}' +
+    '#fbGate input{font:inherit;width:100%;box-sizing:border-box;border:1px solid #e9e1d6;border-radius:12px;padding:10px 12px;margin-top:8px;background:#fbf8f3;color:#1e3a2f}' +
+    '#fbGate .or{color:#6f8178;font-size:.8rem;margin:16px 0 4px}' +
+    '#fbGate .err{color:#b4436c;font-size:.85rem;min-height:1.2em;margin-top:10px}' +
+    '#fbGate .link{background:none;border:0;color:#b4436c;text-decoration:underline;width:auto;padding:4px;margin-top:6px;font-size:.85rem}' +
+    '#fbSignOut{font:inherit;cursor:pointer;border-radius:999px;padding:6px 14px;border:1px solid #e9e1d6;background:#fff;color:#b4436c;font-size:.85rem}' +
+    /* Cheny needs the claude.ai AI connection, which a normal website does not have yet */
+    '#chenyBtn,#chenyPanel{display:none!important}';
+  document.head.appendChild(css);
+
+  var HE = (function () { try { return (localStorage.getItem('shachbag-lang') || 'he') === 'he'; } catch (e) { return true; } })();
+  var T = HE ? {
+    google: 'המשך עם Google', or: 'או עם אימייל', mail: 'אימייל', pass: 'סיסמה (6 תווים לפחות)', signIn: 'כניסה', create: 'יצירת חשבון',
+    toUp: 'חדשים כאן? יצירת חשבון', toIn: 'כבר יש לכם חשבון? כניסה', forgot: 'שכחתי סיסמה', typeMail: 'כתבו קודם את האימייל.',
+    resetSent: 'שלחנו קישור לאיפוס לאימייל.', signOut: 'יציאה', sub: 'תנועת הצופים · שכב״ג', name: 'שבט חן'
+  } : {
+    google: 'Continue with Google', or: 'or with email', mail: 'Email', pass: 'Password (6+ characters)', signIn: 'Sign in', create: 'Create account',
+    toUp: 'New here? Create an account', toIn: 'Already have an account? Sign in', forgot: 'Forgot password', typeMail: 'Type your email first.',
+    resetSent: 'Check your email for a reset link.', signOut: 'Sign out', sub: 'Tzofim · Shachbag', name: 'Shevet Chen'
+  };
+  function gate(html) {
+    var g = document.getElementById('fbGate');
+    if (!g) { g = document.createElement('div'); g.id = 'fbGate'; (document.body || document.documentElement).appendChild(g); }
+    g.dir = HE ? 'rtl' : 'ltr';
+    g.innerHTML = '<div class="box"><div class="logo">' + T.name + '</div><div class="sub">' + T.sub + '</div>' + html + '</div>';
+    return g;
+  }
+  function onReady(fn) { if (document.body) fn(); else document.addEventListener('DOMContentLoaded', fn); }
+
+  if (!configured) {
+    window.claude = undefined;
+    onReady(function () {
+      gate('<p>This site isn’t connected to its database yet.</p><p class="sub">Paste your Firebase settings into <b>firebase-config.js</b> (see README).</p>');
+    });
+    return;
+  }
+
+  firebase.initializeApp(cfg);
+  var auth = firebase.auth();
+  var fs = firebase.firestore();
+  if (cfg.emulator) { auth.useEmulator('http://127.0.0.1:9099'); fs.useEmulator('127.0.0.1', 8080); } // local testing only
+
+  /* ---------- database wrapper ----------
+     Same calls the app already uses (collection, doc, where, orderBy, limit,
+     onSnapshot, add, set, update, delete). If the server refuses a read
+     (someone not approved yet), the app gets an empty result instead of an error. */
+  var EMPTY = { docs: [], exists: false, data: function () { return undefined; }, metadata: { fromCache: false } };
+  function wrap(ref) {
+    var w = Object.create(ref);
+    ['where', 'orderBy', 'limit', 'collection', 'doc'].forEach(function (m) {
+      if (typeof ref[m] === 'function') w[m] = function () { return wrap(ref[m].apply(ref, arguments)); };
+    });
+    w.onSnapshot = function (next, err) {
+      // includeMetadataChanges: the app waits for a server-confirmed result before it hides "Connecting…"
+      return ref.onSnapshot({ includeMetadataChanges: true }, next, function (e) {
+        if (e && e.code === 'permission-denied') next(EMPTY);
+        else if (err) err(e);
+      });
+    };
+    ['add', 'set', 'update', 'delete', 'get'].forEach(function (m) {
+      if (typeof ref[m] === 'function') w[m] = function () { return ref[m].apply(ref, arguments); };
+    });
+    if ('id' in ref) w.id = ref.id;
+    return w;
+  }
+  var db = { collection: function (p) { return wrap(fs.collection(p)); }, doc: function (p) { return wrap(fs.doc(p)); } };
+
+  /* ---------- sign-in ---------- */
+  var signedIn = new Promise(function (resolve) {
+    var resolved = false;
+    auth.onAuthStateChanged(function (u) {
+      if (u) {
+        var g = document.getElementById('fbGate'); if (g) g.remove();
+        if (!resolved) { resolved = true; resolve(u); }
+        else location.reload();
+      } else if (resolved) {
+        location.reload();
+      } else {
+        onReady(showSignIn);
+      }
+    });
+  });
+
+  function showSignIn() {
+    var mode = 'in';
+    function draw() {
+      var g = gate(
+        '<button class="primary" id="fbGoogle" type="button">' + T.google + '</button>' +
+        '<div class="or">' + T.or + '</div>' +
+        '<form id="fbEmail"><input id="fbMail" type="email" autocomplete="email" placeholder="' + T.mail + '" required>' +
+        '<input id="fbPass" type="password" autocomplete="' + (mode === 'in' ? 'current' : 'new') + '-password" placeholder="' + T.pass + '" minlength="6" required>' +
+        '<button type="submit">' + (mode === 'in' ? T.signIn : T.create) + '</button></form>' +
+        '<button class="link" id="fbSwitch" type="button">' + (mode === 'in' ? T.toUp : T.toIn) + '</button>' +
+        (mode === 'in' ? '<button class="link" id="fbReset" type="button">' + T.forgot + '</button>' : '') +
+        '<div class="err" id="fbErr" role="alert"></div>');
+      var err = function (e) { document.getElementById('fbErr').textContent = (e && e.message || String(e)).replace(/^Firebase:\s*/, ''); };
+      g.querySelector('#fbGoogle').onclick = function () {
+        auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function (e) {
+          if (e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment')) auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+          else err(e);
+        });
+      };
+      g.querySelector('#fbEmail').onsubmit = function (ev) {
+        ev.preventDefault();
+        var m = document.getElementById('fbMail').value.trim(), p = document.getElementById('fbPass').value;
+        (mode === 'in' ? auth.signInWithEmailAndPassword(m, p) : auth.createUserWithEmailAndPassword(m, p)).catch(err);
+      };
+      g.querySelector('#fbSwitch').onclick = function () { mode = mode === 'in' ? 'up' : 'in'; draw(); };
+      var r = g.querySelector('#fbReset');
+      if (r) r.onclick = function () {
+        var m = document.getElementById('fbMail').value.trim();
+        if (!m) { err(T.typeMail); return; }
+        auth.sendPasswordResetEmail(m).then(function () { err(T.resetSent); }, err);
+      };
+    }
+    draw();
+  }
+
+  function displayName(u) { return u.displayName || (u.email ? u.email.split('@')[0] : 'Someone'); }
+
+  /* ---------- owner: the first person to sign in after setup ---------- */
+  var ownerP = signedIn.then(function (u) {
+    var ref = fs.doc('settings/owner');
+    return ref.get().then(function (s) {
+      if (s.exists) return s.data().uid === u.uid;
+      return ref.set({ uid: u.uid, claimedAt: Date.now() }).then(function () { seed(); return true; }, function () { return false; });
+    }).catch(function () { return false; });
+  });
+
+  /* copy the starting data (machsan, calendar, group needs, access) the first time */
+  function seed() {
+    fetch('seed.json').then(function (r) { return r.json(); }).then(function (data) {
+      var writes = [];
+      Object.keys(data).forEach(function (col) {
+        Object.keys(data[col]).forEach(function (id) { writes.push([col + '/' + id, data[col][id]]); });
+      });
+      var chain = Promise.resolve();
+      for (var i = 0; i < writes.length; i += 400) (function (part) {
+        chain = chain.then(function () { var b = fs.batch(); part.forEach(function (w) { b.set(fs.doc(w[0]), w[1]); }); return b.commit(); });
+      })(writes.slice(i, i + 400));
+      return chain;
+    }).catch(function (e) { console.warn('Seeding skipped', e); });
+  }
+
+  /* reload when this person's approval changes, so the server lets them in */
+  signedIn.then(function (u) {
+    var last;
+    fs.doc('approvals/' + u.uid).onSnapshot(function (s) {
+      var st = s.exists ? (s.data().status + '|' + s.data().portal) : '';
+      if (last !== undefined && st !== last) location.reload();
+      last = st;
+    }, function () {});
+    fs.doc('users/' + u.uid).set({ name: displayName(u), updatedAt: Date.now() }, { merge: true }).catch(function () {});
+    onReady(function () {
+      var btn = document.createElement('button');
+      btn.id = 'fbSignOut'; btn.type = 'button'; btn.textContent = T.signOut;
+      btn.onclick = function () { auth.signOut(); };
+      var back = document.getElementById('settingsBack');
+      if (back && back.parentNode) back.parentNode.insertBefore(btn, back);
+    });
+  });
+
+  var user = {
+    me: function () { return signedIn.then(function (u) { return { id: u.uid, name: displayName(u) }; }); },
+    isOwner: function () { return ownerP; },
+    canEdit: function () { return ownerP; },
+    profiles: function (ids) {
+      return signedIn.then(function (u) {
+        return Promise.all(ids.map(function (id) {
+          return fs.doc('users/' + id).get().then(function (s) { return [id, s.exists ? s.data().name : '']; }, function () { return [id, '']; });
+        })).then(function (rows) {
+          var o = {}; rows.forEach(function (r) { if (r[1]) o[r[0]] = { name: r[1], isMe: r[0] === u.uid }; }); return o;
+        });
+      });
+    }
+  };
+
+  window.claude = {
+    use: function (what) {
+      if (what === 'db') return signedIn.then(function () { return db; });
+      if (what === 'user') return signedIn.then(function () { return user; });
+      return Promise.reject(new Error(what + ' is not available on this site'));
+    }
+  };
+})();

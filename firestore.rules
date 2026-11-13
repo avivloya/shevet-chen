@@ -1,0 +1,49 @@
+rules_version = '2';
+// Who can read and write what. Paste this into Firebase > Firestore > Rules.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function ownerDoc() { return /databases/$(database)/documents/settings/owner; }
+    function isOwner() { return signedIn() && exists(ownerDoc()) && get(ownerDoc()).data.uid == request.auth.uid; }
+    function approved() {
+      let a = /databases/$(database)/documents/approvals/$(request.auth.uid);
+      return signedIn() && exists(a) && get(a).data.status == 'approved' && get(a).data.portal == 'shachbag';
+    }
+    function member() { return isOwner() || approved(); }
+    function self(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // The first person to sign in after setup becomes the owner (Aviv).
+    match /settings/owner {
+      allow read: if signedIn();
+      allow create: if signedIn() && !exists(ownerDoc()) && request.resource.data.uid == request.auth.uid;
+    }
+    // Access settings and Cheny notes: members read, only the owner changes.
+    match /settings/{id} {
+      allow read: if member();
+      allow write: if isOwner();
+    }
+    // Only the owner approves people. Everyone can see their own status.
+    match /approvals/{uid} {
+      allow read: if member() || self(uid);
+      allow write: if isOwner();
+    }
+    // Join requests: your own, or the owner sees all.
+    match /requests/{uid} {
+      allow read, write: if isOwner() || self(uid);
+    }
+    // Usernames and profile pictures.
+    match /profiles/{uid} {
+      allow read: if member() || self(uid);
+      allow write: if isOwner() || self(uid);
+    }
+    match /users/{uid} {
+      allow read: if member() || self(uid);
+      allow write: if isOwner() || self(uid);
+    }
+    // Everything else (roster, calendar, messages, machsan, peulot...):
+    // only approved shachbag members and the owner.
+    match /{col}/{id} {
+      allow read, write: if member() && !(col in ['settings', 'approvals', 'requests', 'profiles', 'users']);
+    }
+  }
+}
