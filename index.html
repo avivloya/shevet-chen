@@ -886,7 +886,7 @@ function sample(){
     replies:{b1:[{id:'r1',bid:'b1',text:he?'אני מביאה מקרן.':'I’ll bring the projector.',authorId:'demo-noa',createdAt:Date.now()-36e5}]},
     requests:[{id:'u1',name:(he?'דניאל':'Daniel')+X,email:'daniel@example.com',phone:'050-000-0001',portal:'shachbag',role:'madrich',unit:he?'ז׳':'7th grade',createdAt:Date.now()-5*36e5},{id:'u2',name:(he?'מיכל':'Michal')+X,email:'michal@example.com',phone:'050-000-0002',portal:'parent',createdAt:Date.now()-30*6e4},{id:'u3',name:(he?'שקד':'Shaked')+X,email:'shaked@example.com',phone:'050-000-0003',portal:'shachbag',createdAt:Date.now()-9*864e5}],
     approvals:[{id:'u3',status:'approved',portal:'shachbag',role:'rashgad',unit:he?'ד׳':'4th grade'}],
-    items:[[he?'חבלים':'Rope',40,he?'עבודת שטח':'Pioneering',he?'מדף א':'Shelf A'],[he?'מוטות':'Poles',120,he?'עבודת שטח':'Pioneering',he?'פינה':'Corner'],[he?'ברזנטים':'Tarps',15,he?'מחנאות':'Camping',he?'מדף ב':'Shelf B'],[he?'פנסים':'Lanterns',25,he?'מחנאות':'Camping',he?'ארגז 3':'Box 3'],[he?'דגלים':'Flags',30,he?'טקסים':'Tekes',he?'ארגז 1':'Box 1'],[he?'ערכת עזרה ראשונה':'First aid kit',6,he?'בטיחות':'Safety',he?'ליד הדלת':'By the door'],[he?'ג׳ריקנים':'Jerrycans',12,he?'מחנאות':'Camping',he?'רצפה':'Floor'],[he?'משרוקיות':'Whistles',20,he?'בטיחות':'Safety',he?'ארגז 2':'Box 2']].map(function(x,i){return {id:'i'+i,name:x[0],qty:x[1],category:x[2],location:x[3]}}),
+    items:window.PREVIEW_ITEMS?JSON.parse(JSON.stringify(window.PREVIEW_ITEMS)):[[he?'חבלים':'Rope',40,he?'עבודת שטח':'Pioneering',he?'מדף א':'Shelf A'],[he?'מוטות':'Poles',120,he?'עבודת שטח':'Pioneering',he?'פינה':'Corner'],[he?'ברזנטים':'Tarps',15,he?'מחנאות':'Camping',he?'מדף ב':'Shelf B'],[he?'פנסים':'Lanterns',25,he?'מחנאות':'Camping',he?'ארגז 3':'Box 3'],[he?'דגלים':'Flags',30,he?'טקסים':'Tekes',he?'ארגז 1':'Box 1'],[he?'ערכת עזרה ראשונה':'First aid kit',6,he?'בטיחות':'Safety',he?'ליד הדלת':'By the door'],[he?'ג׳ריקנים':'Jerrycans',12,he?'מחנאות':'Camping',he?'רצפה':'Floor'],[he?'משרוקיות':'Whistles',20,he?'בטיחות':'Safety',he?'ארגז 2':'Box 2']].map(function(x,i){return {id:'i'+i,name:x[0],qty:x[1],category:x[2],location:x[3]}}),
     needs:[[he?'שכבה ב׳':'2nd Grade',he?'הרבה טושים':'A lot of markers','Ella','notPacked'],[he?'שכבה ד׳':'4th Grade',he?'סלוטייפ, טושים, דפים, מספריים, רמקול':'Tape, colored markers, papers, scissors, speaker','Gur','packed'],[he?'צופיות':'Tzofiut','','Ori','none']].map(function(x,i){return {id:'n'+i,group:x[0],materials:x[1],people:x[2],status:x[3],order:i}}),
     peulot:[{id:'p1',gk:gkOf('madrich',he?'ד׳':'4th grade'),groupRole:'madrich',unit:he?'ד׳':'4th grade',title:he?'פעולת קשרים':'Knots peula',date:d(2),status:'submitted',authorId:'demo-noa',f_goal:he?'החניכים ילמדו 3 קשרים בסיסיים ויעבדו בצוות.':'Chanichim learn 3 basic knots and practice teamwork.',f_length:'60 min',f_opening:he?'משחק חבל במעגל.':'Rope circle game.',f_main:he?'תחנות קשרים בקבוצות של 4.':'Knot stations in groups of 4.',f_kids:'14',f_goals:he?'החניכים ילמדו 3 קשרים בסיסיים ויעבדו בצוות.':'Chanichim learn 3 basic knots and work as a team.',plan:[{tm:'12:00',title:he?'פתיחה – מעגל חבל':'Opening – rope circle',desc:he?'כולם מחזיקים חבל אחד ומנסים לשבת ביחד.':'Everyone holds one rope and tries to sit down together.',mats:he?'חבל ארוך':'Long rope'},{tm:'12:20',title:he?'תחנות קשרים':'Knot stations',desc:he?'3 תחנות, 10 דקות בכל אחת.':'3 stations, 10 minutes each.',mats:he?'10 חבלים':'10 ropes'}],materials:[{itemId:'i0',name:he?'חבלים':'Rope',qty:10,reqId:'q1'}],notes:[],createdAt:Date.now()-864e5,updatedAt:Date.now()-36e5}],
     mxReqs:[{id:'q1',itemId:'i0',itemName:he?'חבלים':'Rope',qty:10,from:d(3),to:d(5),note:he?'פעולת קשרים לשכבה ד׳':'Knots peula for 4th grade',requesterId:'demo-noa',status:'pending',createdAt:Date.now()-2*36e5},{id:'q2',itemId:'i3',itemName:he?'פנסים':'Lanterns',qty:8,from:d(1),to:d(2),note:'',requesterId:'demo-aviv',status:'approved',createdAt:Date.now()-26*36e5}],
@@ -922,8 +922,25 @@ function resolve(ids){
 /* writes */
 var chains={};
 function serial(key,fn){var p=(chains[key]||Promise.resolve()).then(fn,fn);chains[key]=p.catch(function(){});return p}
+/* public preview page: example data you can change until the page closes */
+var PREVIEW=!!window.SHEVET_PREVIEW;
+var MEMC={peulot:'peulot',machsanReq:'mxReqs',broadcasts:'broadcasts',events:'events',tasks:'tasks',roster:'roster',machsan:'items',mxNeeds:'needs',attendance:'sessions'};
+function memDb(){
+  function arr(c){var k=MEMC[c];if(!k||!SAMPLE)return null;SAMPLE[k]=SAMPLE[k]||[];return SAMPLE[k]}
+  function clone(d){d=JSON.parse(JSON.stringify(d||{}));if(viewAs){['authorId','requesterId','by'].forEach(function(f){if(d[f]===meId)d[f]=viewAs})}return d}
+  function find(a,id){for(var i=0;i<a.length;i++)if(a[i].id===id)return i;return -1}
+  function done(){setTimeout(renderApp,0);return Promise.resolve()}
+  function ref(c,id){return {id:id,
+    set:function(d){if(c==='settings'&&id==='access'){SAMPLE.access=clone(d);return done()}var a=arr(c);if(a){var o=Object.assign(clone(d),{id:id}),i=find(a,id);if(i>=0)a[i]=o;else a.push(o)}return done()},
+    update:function(d){var a=arr(c);if(a){var i=find(a,id);if(i>=0)Object.assign(a[i],clone(d))}return done()},
+    delete:function(){var a=arr(c);if(a){var i=find(a,id);if(i>=0)a.splice(i,1)}return done()}}}
+  return {doc:function(path){var p=path.split('/');return ref(p[0],p[1])},
+    collection:function(c){return {doc:function(id){return ref(c,id)},add:function(d){var id='x'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),o=Object.assign(clone(d),{id:id});
+      if(c==='replies'){SAMPLE.replies=SAMPLE.replies||{};(SAMPLE.replies[o.bid]=SAMPLE.replies[o.bid]||[]).push(o)}else{var a=arr(c);if(a)a.push(o)}
+      return done().then(function(){return {id:id}})}}}};
+}
 function ok(perm){
-  if(demo){toast(t('tExample'));return false}
+  if(demo&&!PREVIEW){toast(t('tExample'));return false}
   if(!db){toast(t('tNoData'));return false}
   if(perm&&!can(perm)){toast(t('tNoPerm'));return false}
   return true;
@@ -1690,7 +1707,7 @@ if(window.claude&&window.claude.use){
       renderApp();
     });
   });
-}else{ready=true;setLoad('outside');$('loadBanner').hidden=false;renderApp()}
+}else{ready=true;if(PREVIEW){db=memDb();meId='demo-aviv'}setLoad('outside');$('loadBanner').hidden=false;renderApp()}
 })();
 </script>
 

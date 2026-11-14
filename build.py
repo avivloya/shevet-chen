@@ -18,11 +18,14 @@ head = '''<!doctype html>
 open('index.html', 'w', encoding='utf-8').write(head + src + '\n</body>\n</html>\n')
 print('index.html written')
 
+import json
+_mx = json.load(open('seed.json', encoding='utf-8'))['machsan']
+preview_items = 'window.PREVIEW_ITEMS = ' + json.dumps([dict(v, id=k) for k, v in sorted(_mx.items())], ensure_ascii=False) + ';\n'
 # Public preview with a pretend phone-number sign-in and example data (nothing is saved).
 demo_head = head.replace("""<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-<script src="bridge.js"></script>""", '<script>\n' + open('demo.js', encoding='utf-8').read() + '\n</script>')  # inlined so phones never use an old cached copy
+<script src="bridge.js"></script>""", '<script>\n' + preview_items + open('demo.js', encoding='utf-8').read() + '\n</script>')  # inlined so phones never use an old cached copy
 open('demo.html', 'w', encoding='utf-8').write(demo_head + src + '\n</body>\n</html>\n')
 print('demo.html written')

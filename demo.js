@@ -1,5 +1,6 @@
 /* Shevet Chen preview: logo intro, language choice, pretend phone-number sign-in, then the app
    with example data. Nothing is saved and no real text message is sent. */
+window.SHEVET_PREVIEW = true;
 (function () {
   var TXT = {
     he: { name: 'שבט חן', sub: 'תנועת הצופים · שכב״ג', phone: 'מספר טלפון', send: 'שליחת קוד', code: 'קוד בן 6 ספרות',
