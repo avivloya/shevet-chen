@@ -107,6 +107,6 @@
 
   window.addEventListener('DOMContentLoaded', function () {
     startDemo();
-    if (!signedIn()) splash(gate);
+    splash(gate); // always start from the intro, so every visit shows the full flow
   });
 })();
