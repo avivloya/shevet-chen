@@ -338,6 +338,7 @@ table.matrix.att{min-width:0;width:auto}
 .matrix th:first-child,.matrix td:first-child{text-align:start;padding-inline-start:18px;white-space:nowrap}
 .matrix thead th{font-weight:400;color:var(--muted);vertical-align:bottom;font-size:.8rem}
 .matrix tr:last-child td{border-bottom:0}
+.acc-grp{display:inline-flex;align-items:center;gap:10px}.acc-grp select{width:auto;font-family:var(--body);font-size:.88rem;padding:6px 32px 6px 12px}
 .matrix tr.mx-sub td{text-align:start;font-family:var(--display,inherit);color:var(--green);background:var(--bg);padding-top:16px;font-size:.9rem;white-space:normal}
 .tick{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);cursor:pointer;padding:0;display:inline-grid;place-items:center;margin:0}
 .tick:checked{background:var(--green);border-color:var(--green)}
@@ -713,7 +714,7 @@ waiting:'Waiting for approval',noPending:'No one is waiting. New sign-ups show u
 shachbagPortal:'Shachbag',parentPortal:'Parent',asPosition:'as',requested:'asked',
 byPosition:'What each position can do',byPositionHelp:'Tick what each position can see and do. Merakzim start with everything. Changes save right away.',
 byPerson:'Approved people',byPersonHelp:'Give someone their own access instead of their position’s, or remove them.',
-noApproved:'No one approved yet.',customize:'Give own access',useRole:'Use position’s access',peilimAccess:'Each peilim group (starts the same as the position above; change any box to give that group its own access)',resetPos:'Reset',removeAccess:'Remove access',removeAccessQ:'Remove their access?',
+noApproved:'No one approved yet.',customize:'Give own access',useRole:'Use position’s access',peilimAccess:'Peilim group',resetPos:'Reset',removeAccess:'Remove access',removeAccessQ:'Remove their access?',
 see:'Can see',doo:'Can do',
 p_home:'Home',p_people:'People',p_attendance:'Attendance',p_calendar:'Calendar',p_messages:'Messages',
 p_editPeople:'Add & remove people',p_takeAttendance:'Take attendance',p_editEvents:'Add & edit events',p_send:'Send messages & reminders',p_reply:'Reply to messages',
@@ -758,7 +759,7 @@ waiting:'מחכים לאישור',noPending:'אף אחד לא מחכה. הרשמ
 shachbagPortal:'שכב״ג',parentPortal:'הורה',asPosition:'בתור',requested:'ביקש/ה',
 byPosition:'מה כל תפקיד יכול לעשות',byPositionHelp:'סמנו מה כל תפקיד רואה ועושה. המרכזים מתחילים עם הכל. השינויים נשמרים מיד.',
 byPerson:'אנשים מאושרים',byPersonHelp:'אפשר לתת למישהו הרשאות משלו במקום של התפקיד, או להסיר אותו.',
-noApproved:'עוד אף אחד לא אושר.',customize:'הרשאות אישיות',useRole:'לפי התפקיד',peilimAccess:'כל צוות פעילים (מתחיל כמו התפקיד למעלה; שנו תיבה כדי לתת לצוות הרשאות משלו)',resetPos:'איפוס',removeAccess:'הסרת גישה',removeAccessQ:'להסיר את הגישה?',
+noApproved:'עוד אף אחד לא אושר.',customize:'הרשאות אישיות',useRole:'לפי התפקיד',peilimAccess:'צוות פעילים',resetPos:'איפוס',removeAccess:'הסרת גישה',removeAccessQ:'להסיר את הגישה?',
 see:'רואה',doo:'עושה',
 p_home:'בית',p_people:'אנשים',p_attendance:'נוכחות',p_calendar:'לוח שנה',p_messages:'הודעות',
 p_editPeople:'הוספה והסרה של אנשים',p_takeAttendance:'לקיחת נוכחות',p_editEvents:'הוספה ועריכה של אירועים',p_send:'שליחת הודעות ותזכורות',p_reply:'תגובה להודעות',
@@ -1344,6 +1345,7 @@ function renderMessages(){
   $('audSum').textContent=aname({seeRoles:pick('msgAud')});
 }
 function tick(id,on,dis,attrs){return '<input type="checkbox" class="tick" id="'+id+'"'+(on?' checked':'')+(dis?' disabled':'')+' '+attrs+' aria-label="'+id+'">'}
+var accGrp='';
 function renderAccess(){
   if(!((isOwner||demo)&&!viewAs))return;
   var d=D(),appr={};d.approvals.forEach(function(a){appr[a.id]=a});
@@ -1356,8 +1358,9 @@ function renderAccess(){
   // matrix
   var h='<thead><tr><th></th><th colspan="'+VIEWP.length+'" class="grp">'+t('see')+'</th><th colspan="'+ACTP.length+'" class="grp">'+t('doo')+'</th></tr><tr><th></th>'+ALLP.map(function(p){return '<th>'+t('p_'+p)+'</th>'}).join('')+'</tr></thead><tbody>';
   ROLES.forEach(function(r){var a=roleAccess(r.k);h+='<tr><td><span class="role tier'+r.tier+'">'+r[lang]+'</span></td>'+ALLP.map(function(p){return '<td>'+tick('mx-'+r.k+'-'+p,a[p],false,'data-role="'+r.k+'" data-perm="'+p+'"')+'</td>'}).join('')+'</tr>'});
-  h+='<tr class="mx-sub"><td colspan="'+(ALLP.length+1)+'">'+t('peilimAccess')+'</td></tr>';
-  PEILIM.forEach(function(x){var gk='group:'+norm(x.k),gl=lang==='he'?'פעילים '+x.he:'Peilim '+x.k;['rashatz','peil'].forEach(function(rk){var a=roleAccess(rk,gk),ov=grpOver(gk,rk);
+  if(!peil(accGrp))accGrp=PEILIM[0].k;
+  h+='<tr class="mx-sub"><td colspan="'+(ALLP.length+1)+'"><label class="acc-grp" for="accGrp">'+t('peilimAccess')+'<select id="accGrp">'+PEILIM.map(function(x){return '<option value="'+esc(x.k)+'"'+(x.k===accGrp?' selected':'')+'>'+esc(lang==='he'?'פעילים '+x.he:'Peilim '+x.k)+'</option>'}).join('')+'</select></label></td></tr>';
+  PEILIM.filter(function(x){return x.k===accGrp}).forEach(function(x){var gk='group:'+norm(x.k),gl=lang==='he'?'פעילים '+x.he:'Peilim '+x.k;['rashatz','peil'].forEach(function(rk){var a=roleAccess(rk,gk),ov=grpOver(gk,rk);
     h+='<tr><td><span class="role tier'+ROLE[rk].tier+'">'+ROLE[rk][lang]+'</span> <span class="small">'+esc(gl)+'</span>'+(ov?' <button class="btn sm" type="button" style="padding:2px 10px" data-grpreset="'+esc(gk)+'|'+rk+'">'+t('resetPos')+'</button>':'')+'</td>'+ALLP.map(function(p){return '<td>'+tick('mg-'+norm(x.k).replace(/\W+/g,'_')+'-'+rk+'-'+p,a[p],false,'data-grp="'+esc(gk)+'" data-grole="'+rk+'" data-perm="'+p+'"')+'</td>'}).join('')+'</tr>'})});
   $('matrix').innerHTML=h+'</tbody>';
   // approved people
@@ -1421,6 +1424,7 @@ function saveAccess(mut){
 document.addEventListener('change',function(ev){
   var x=ev.target;
   if(x.id==='mxCat'){renderMachsan();return}
+  if(x.id==='accGrp'){accGrp=x.value;renderAccess();return}
   if(x.dataset.needmat){var nid=x.dataset.needmat,mv=x.value.trim();if(!ok('editMachsan'))return;serial('mxNeeds/'+nid,function(){return db.doc('mxNeeds/'+nid).update({materials:mv})}).then(function(){toast(t('tSaved'))},fail);return}
   if(x.dataset.mxqty){var iid=x.dataset.mxqty,upd=mxParse(x.value);if(!ok('editMachsan'))return;serial('machsan/'+iid,function(){return db.doc('machsan/'+iid).update(upd)}).then(function(){toast(t('tSaved'))},fail);return}
   if(x.id==='jRole'){$('jUnitWrap').innerHTML=unitField(x.value,'');return}
