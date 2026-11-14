@@ -23,6 +23,6 @@ demo_head = head.replace("""<script src="https://www.gstatic.com/firebasejs/10.1
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js"></script>
-<script src="bridge.js"></script>""", '<script src="demo.js"></script>')
+<script src="bridge.js"></script>""", '<script>\n' + open('demo.js', encoding='utf-8').read() + '\n</script>')  # inlined so phones never use an old cached copy
 open('demo.html', 'w', encoding='utf-8').write(demo_head + src + '\n</body>\n</html>\n')
 print('demo.html written')
