@@ -629,9 +629,7 @@ table.matrix.att{min-width:0;width:auto}
   <div class="home-hero">
     <div class="stack" style="gap:4px"><span class="label" id="homeDate"></span><h2 id="homeHello"></h2></div>
   </div>
-  <h2 class="sr" data-t="whatToDo"></h2>
-  <div class="tiles" id="homeTiles"></div>
-  <div class="stack" id="groupsWrap"><h2 data-t="groupsH"></h2><div class="group-btns" id="groupBtns"></div></div>
+  <div class="group-btns" id="groupBtns"></div>
   <div class="cols">
     <div class="stack">
       <div class="sec-head"><h2 data-t="comingUp"></h2><a class="link" href="#calendar" data-t="openCal"></a></div>
@@ -1256,19 +1254,7 @@ function renderHome(){
   var vm=vaMember(),nm=vm?vm.name:(meId&&prof(meId)&&prof(meId).username);
   $('homeHello').textContent=nm?t('hello',{n:nm}):t('helloAnon');$('homeDate').textContent=niceDate(ymd(today));
   var mg=myGroup(),mrkAll=full()||isMrk();
-  $('groupsWrap').hidden=!mrkAll;
-  $('groupBtns').innerHTML=mrkAll?allGroups().map(function(g){return groupBtn(g,gkOf(g.role,g.unit)==='merakzim')}).join(''):'';
-  var tile=function(attrs,title,sub,main,badge){return '<'+(attrs.href?'a':'button type="button"')+' class="tile'+(main?' main':'')+'" '+(attrs.href?'href="'+attrs.href+'"':'data-group="'+esc(attrs.group)+'"')+'><span class="grow"><span class="tile-title">'+esc(title)+(badge?'<span class="badge">'+esc(badge)+'</span>':'')+'</span><span class="tile-sub">'+esc(sub)+'</span></span><span class="arrow" aria-hidden="true">'+(lang==='he'?'←':'→')+'</span></'+(attrs.href?'a':'button')+'>'};
-  var tl='',myG=mg&&ROLE[mg.role]&&ROLE[mg.role].unit?mg:(isMrk()&&!full()?{role:effApp().role,unit:''}:null);
-  if(myG)tl+=tile({group:myG.role+'|'+myG.unit},gLabel(myG),t('tl_group'),true);
-  if(can('calendar'))tl+=tile({href:'#calendar'},t('tab_calendar'),t('tl_calendar'));
-  if(can('messages'))tl+=tile({href:'#messages'},t('tab_messages'),t('tl_messages'));
-  if(can('machsan'))tl+=tile({href:'#machsan'},t('tab_machsan'),t('tl_machsan'));
-  if(canReview()){var nRv=(d.peulot||[]).filter(function(x){return x.status==='submitted'}).length;tl+=tile({href:'#peulot'},t('tab_peulot'),t('tl_peulot'),false,nRv?t('tl_peulotN',{n:nRv}):'')}
-  if(can('people'))tl+=tile({href:'#people'},t('tab_people'),t('tl_people'));
-  if(can('attendance'))tl+=tile({href:'#attendance'},t('tab_attendance'),t('tl_attendance'));
-  if((isOwner||demo)&&!viewAs){var appr0={};d.approvals.forEach(function(a){appr0[a.id]=1});var nW=d.requests.filter(function(r){return !appr0[r.id]}).length;tl+=tile({href:'#access'},t('tab_access'),t('tl_access'),false,nW?t('tl_accessN',{n:nW}):'')}
-  $('homeTiles').innerHTML=tl;
+  $('groupBtns').innerHTML=mrkAll?allGroups().map(function(g){return groupBtn(g,gkOf(g.role,g.unit)==='merakzim')}).join(''):mg?groupBtn(mg,true):'';
   var now=new Date(),due=d.events.filter(function(e){var r=remindAt(e);return r&&!e.reminderSent&&r<=now&&evStart(e)>now});
   $('dueHead').hidden=!can('send')||!due.length;$('dueList').hidden=!can('send')||!due.length;
   $('dueList').innerHTML=due.length?due.map(function(e){return '<div class="due"><div class="grow"><b>'+esc(e.title)+'</b> <span class="muted small">'+niceDate(e.date)+(e.time?' · '+tm(e):'')+' · '+esc(aname(e))+'</span></div><button class="btn sm primary" data-remind="'+esc(e.id)+'" type="button">'+t('sendReminder')+'</button></div>'}).join(''):'<div class="empty small">'+t('noDue')+'</div>';
