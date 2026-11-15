@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="he">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -8,7 +8,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="firebase-config.js?v=2"></script>
-<script src="bridge.js?v=2"></script>
+<script src="bridge.js?v=3"></script>
 </head>
 <body>
 <title>Shevet Chen</title>
@@ -1169,7 +1169,7 @@ tSent:'נשלח ל{a}.',tRemSent:'תזכורת נשלחה ל{a}.',tCopied:'הו�
 tReqSent:'הבקשה נשלחה.',tApproved:'אושר.',tDeclined:'נדחה.',tSaved:'נשמר.',
 remPrefix:'תזכורת',ex:'(דוגמה)',justNow:'עכשיו',minAgo:'לפני {n} דק׳',hAgo:'לפני {n} שע׳',waHeader:'שכב״ג חן'}
 };
-var lang='he';try{lang=localStorage.getItem('shachbag-lang')||'he'}catch(e){}
+var lang='en';try{lang=localStorage.getItem('shachbag-lang')||'en'}catch(e){}
 function t(k,v){var s=(T[lang][k]!=null?T[lang][k]:T.en[k]!=null?T.en[k]:k);if(v)Object.keys(v).forEach(function(x){s=s.replace('{'+x+'}',v[x])});return s}
 
 /* ================= roles & permissions ================= */

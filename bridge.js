@@ -24,7 +24,7 @@
     '#chenyBtn,#chenyPanel{display:none!important}';
   document.head.appendChild(css);
 
-  var HE = (function () { try { return (localStorage.getItem('shachbag-lang') || 'he') === 'he'; } catch (e) { return true; } })();
+  var HE = (function () { try { return (localStorage.getItem('shachbag-lang') || 'en') === 'he'; } catch (e) { return false; } })();
   var T = HE ? {
     google: 'המשך עם Google', or: 'או עם אימייל', mail: 'אימייל', pass: 'סיסמה (6 תווים לפחות)', signIn: 'כניסה', create: 'יצירת חשבון',
     toUp: 'חדשים כאן? יצירת חשבון', toIn: 'כבר יש לכם חשבון? כניסה', forgot: 'שכחתי סיסמה', typeMail: 'כתבו קודם את האימייל.',
@@ -109,7 +109,22 @@
         '<button class="link" id="fbSwitch" type="button">' + (mode === 'in' ? T.toUp : T.toIn) + '</button>' +
         (mode === 'in' ? '<button class="link" id="fbReset" type="button">' + T.forgot + '</button>' : '') +
         '<div class="err" id="fbErr" role="alert"></div>');
-      var err = function (e) { document.getElementById('fbErr').textContent = (e && e.message || String(e)).replace(/^Firebase:\s*/, ''); };
+      var MSG = {
+        'auth/invalid-credential': HE ? 'האימייל או הסיסמה לא נכונים. אין לך חשבון עדיין? לחצו על "יצירת חשבון" למטה.' : 'Wrong email or password. No account yet? Tap "Create an account" below first.',
+        'auth/invalid-login-credentials': HE ? 'האימייל או הסיסמה לא נכונים. אין לך חשבון עדיין? לחצו על "יצירת חשבון" למטה.' : 'Wrong email or password. No account yet? Tap "Create an account" below first.',
+        'auth/user-not-found': HE ? 'אין חשבון עם האימייל הזה. לחצו על "יצירת חשבון" למטה.' : 'No account with that email. Tap "Create an account" below.',
+        'auth/wrong-password': HE ? 'הסיסמה לא נכונה.' : 'That password is wrong.',
+        'auth/email-already-in-use': HE ? 'כבר יש חשבון עם האימייל הזה. היכנסו במקום.' : 'There is already an account with that email. Sign in instead.',
+        'auth/weak-password': HE ? 'הסיסמה צריכה לפחות 6 תווים.' : 'The password needs at least 6 characters.',
+        'auth/invalid-email': HE ? 'האימייל לא תקין.' : 'That email doesn\u2019t look right.',
+        'auth/popup-closed-by-user': HE ? 'החלון נסגר לפני שסיימתם. נסו שוב.' : 'The Google window closed before you finished. Try again.',
+        'auth/cancelled-popup-request': '',
+        'auth/unauthorized-domain': HE ? 'האתר הזה עוד לא מאושר ב־Firebase (Authorized domains).' : 'This site isn\u2019t allowed yet in Firebase (Authentication > Settings > Authorized domains).',
+        'auth/operation-not-allowed': HE ? 'שיטת הכניסה הזו לא מופעלת ב־Firebase (Authentication > Sign-in method).' : 'This sign-in method isn\u2019t turned on in Firebase (Authentication > Sign-in method).',
+        'auth/network-request-failed': HE ? 'אין חיבור לאינטרנט. נסו שוב.' : 'No internet connection. Try again.',
+        'auth/too-many-requests': HE ? 'יותר מדי ניסיונות. חכו כמה דקות.' : 'Too many tries. Wait a few minutes.'
+      };
+      var err = function (e) { var c = e && e.code, m = c && MSG[c] != null ? MSG[c] : (e && e.message || String(e)).replace(/^Firebase:\s*/, ''); document.getElementById('fbErr').textContent = m + (c && MSG[c] == null ? '' : '') ; if (c) console.warn('auth error', c); };
       g.querySelector('#fbGoogle').onclick = function () {
         auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function (e) {
           if (e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment')) auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
