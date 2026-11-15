@@ -10,6 +10,11 @@ service cloud.firestore {
       return signedIn() && exists(a) && get(a).data.status == 'approved' && get(a).data.portal == 'shachbag';
     }
     function member() { return isOwner() || approved(); }
+    function merakez() {
+      let a = /databases/$(database)/documents/approvals/$(request.auth.uid);
+      return approved() && get(a).data.role in ['mifalim', 'tzeirim', 'bogeret', 'boger'];
+    }
+    function manager() { return isOwner() || merakez(); }
     function self(uid) { return signedIn() && request.auth.uid == uid; }
 
     // The first person to sign in after setup becomes the owner (Aviv).
@@ -22,14 +27,15 @@ service cloud.firestore {
       allow read: if member();
       allow write: if isOwner();
     }
-    // Only the owner approves people. Everyone can see their own status.
+    // The owner and the merakzim approve and remove people (not themselves). Everyone can see their own status.
     match /approvals/{uid} {
       allow read: if member() || self(uid);
-      allow write: if isOwner();
+      allow write: if manager() && !self(uid);
     }
     // Join requests: your own, or the owner sees all.
     match /requests/{uid} {
-      allow read, write: if isOwner() || self(uid);
+      allow read: if manager() || self(uid);
+      allow write: if isOwner() || self(uid);
     }
     // Usernames and profile pictures.
     match /profiles/{uid} {
