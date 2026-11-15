@@ -162,7 +162,7 @@ textarea{resize:vertical}
 .adder:not(.open)>h3::before{content:'+';font-size:1.15rem;line-height:1}
 .adder.open>h3::after{content:'×';float:inline-end;color:var(--muted);font-family:var(--body)}
 .mx-side{order:2}
-#v-machsan .cols{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}
+@media (min-width:701px){#v-machsan .cols{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
 .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
 .tile{display:flex;align-items:center;gap:14px;text-align:start;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;box-shadow:var(--shadow);cursor:pointer;color:var(--ink);text-decoration:none;font:inherit;width:100%;box-sizing:border-box;min-width:0}
 .tile:hover{border-color:var(--rose)}
@@ -403,6 +403,110 @@ table.matrix.att{min-width:0;width:auto}
 
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:999px;z-index:20;max-width:calc(100% - 32px);font-size:.9rem}
 .confirm{display:inline-flex;gap:6px;align-items:center}
+
+/* ===== v27 "product" look: one typeface, tighter radii, flat surfaces, real app navigation ===== */
+:root{--bg:#f7f7f4;--surface:#fff;--ink:#17211c;--muted:#68736d;--line:#e5e5df;--r:12px;
+  --display:"Heebo",system-ui,-apple-system,"Segoe UI",sans-serif;--shadow:0 1px 2px rgba(16,24,20,.04);--rose:#c0507a;--pink:#f2d2dd}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#111614;--surface:#181f1c;--line:#26302b;--shadow:none}}
+:root[data-theme="dark"]{--bg:#111614;--surface:#181f1c;--line:#26302b;--shadow:none}
+body{font-size:15px;line-height:1.55}
+h1,h2,h3{font-weight:600;letter-spacing:-.01em}
+h2{font-size:1.15rem} h3{font-size:1rem}
+.home-hero h2{font-size:1.65rem} .group-hero h2{font-size:1.5rem}
+.label{letter-spacing:.06em;font-size:.7rem}
+main{padding-block:24px 72px}
+.view{gap:24px}
+.cols{gap:24px}
+.card{padding:18px 20px}
+.btn{border-radius:8px;padding:8px 16px;font-weight:500}
+.btn.sm{border-radius:7px;padding:5px 12px}
+input,select,textarea{border-radius:8px;background:var(--surface);padding:9px 12px}
+input:focus,select:focus,textarea:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--green) 15%,transparent)}
+.me-btn{border-radius:8px;padding:4px 12px 4px 4px}
+[dir="rtl"] .me-btn{padding:4px 4px 4px 12px}
+.me-btn .av{width:28px;height:28px}
+.group-btns{gap:8px}
+.group-btn{border-radius:10px;border-color:var(--line);box-shadow:none;font-family:var(--body);font-weight:500;font-size:.95rem;padding:9px 14px}
+.group-btn:hover{border-color:var(--green)}
+.group-btn .arrow{color:var(--muted)}
+.date-badge{border-radius:10px;width:48px;padding:6px 0}
+.date-badge b{font-family:var(--body);font-weight:600;font-size:1.2rem}
+.empty{border:0;background:none;text-align:start;padding:14px 2px}
+.list>.empty{padding:16px 18px}
+.page-help{font-size:.9rem;margin:-8px 0 0}
+.item{padding:12px 16px}
+.lang,.seg{border-radius:9px}
+.lang button,.seg button{border-radius:7px}
+.lang button[aria-pressed="true"]{box-shadow:none}
+.pill,.tag,.role,.st,.pst,.need-st{border-radius:6px}
+.due{border-radius:10px}
+.adder:not(.open)>h3{border-radius:8px;border-style:solid;border-color:var(--line);color:var(--ink);font-weight:500;padding:8px 14px}
+.adder:not(.open)>h3::before{color:var(--green)}
+.adder:not(.open)>h3:hover{border-color:var(--green)}
+details.more>summary{color:var(--green)}
+a.link,.link{color:var(--green);border-bottom:0;font-weight:500}
+.banner.demo>div>div,.banner>div>div{border-radius:10px}
+.mx-cat{font-family:var(--body);font-weight:600;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.chat{border-radius:var(--r)}
+.cheny-fab{box-shadow:0 2px 10px rgba(16,24,20,.12)}
+/* nav with icons */
+.tabs a{display:inline-flex;align-items:center;gap:7px;font-weight:500;padding:10px 12px 12px}
+.tabs a svg{width:18px;height:18px;flex:none;opacity:.8}
+.tabs a[aria-current="page"]{border-bottom-color:var(--green);color:var(--green)}
+.tabs a[aria-current="page"] svg{opacity:1}
+@media (max-width:700px){
+  #tabsWrap{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding:0 0 env(safe-area-inset-bottom,0px);max-width:none}
+  .tabs{padding:0;gap:0;justify-content:space-around}
+  .tabs a{flex:1 1 0;min-width:0;flex-direction:column;gap:3px;font-size:.62rem;padding:8px 1px 7px;border-bottom:0;border-top:2px solid transparent;justify-content:center}
+  .tabs a svg{width:22px;height:22px}
+  .tabs a span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .tabs a[aria-current="page"]{border-top-color:var(--green)}
+  main{padding-bottom:110px}
+  .cheny-fab{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .home-hero h2{font-size:1.45rem}
+  .bar{padding-block:10px}
+}
+.mx-search{display:block}.mx-search input{padding:11px 14px;font-size:1rem}
+.mx-req-line{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}.mx-req-line label:first-child{width:90px}.mx-req-line .grow{flex:1;min-width:160px}
+.mx-req-form{border-radius:10px}
+
+/* v28 cleaner peula page */
+#peulaBox{max-width:860px;margin-inline:auto;width:100%;min-width:0}
+.pdoc{min-width:0;box-sizing:border-box;padding:24px clamp(16px,3.5vw,32px);gap:24px;box-shadow:none}
+.pf-lines{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px}
+.pf-line{flex-direction:column;align-items:stretch;gap:5px;min-width:0}
+.pf-line.col,.pf-lines>.small{grid-column:1/-1}
+.pf-line label,.pf-lab{font-family:var(--body);font-weight:600;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);white-space:normal}
+.pf-val{font-family:var(--body);font-size:1rem;font-weight:500;color:var(--ink);padding:10px 0}
+.pf-line input{min-width:0;max-width:none!important;width:100%;box-sizing:border-box}
+.pdoc input:disabled,.pdoc textarea:disabled{padding-block:10px}
+.pdoc-sec{gap:10px;border-top:1px solid var(--line);padding-top:20px}
+.pdoc-sec h3{font-size:1rem;font-weight:600;color:var(--ink)}
+.plan-wrap{overflow:visible;border:1px solid var(--line);border-radius:10px}
+.plan{min-width:0;border:0;table-layout:fixed}
+.plan td{border:0;border-top:1px solid var(--line)}
+.plan td+td{border-inline-start:1px solid var(--line)}
+.plan th{font-family:var(--body);font-weight:600;font-size:.72rem!important;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)!important;background:var(--bg);padding:9px 10px!important}
+.plan th:first-child{border-start-start-radius:10px}.plan th:last-child{border-start-end-radius:10px}
+.plan td textarea{font-size:.92rem!important;line-height:1.5}
+.plan td.tm,.plan th:nth-child(1){width:72px}.plan td.zm,.plan th:nth-child(2){width:24%}.plan td.mt,.plan th:nth-child(4){width:22%}.plan td.x,.plan th.x{width:34px}
+.plan td.x{text-align:center;vertical-align:middle}
+#plActions{padding-inline:4px}
+@media (max-width:700px){
+  .pf-lines{grid-template-columns:minmax(0,1fr)}
+  .plan-wrap{border:0;border-radius:0}
+  .plan,.plan tbody{display:block}
+  .plan thead{display:none}
+  .plan tr{display:grid;grid-template-columns:72px minmax(0,1fr);border:1px solid var(--line);border-radius:10px;margin-bottom:10px;position:relative;padding:6px 4px}
+  .plan td{display:block;border:0!important;width:auto!important}
+  .plan td::before{content:attr(data-l);display:block;font-size:.66rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:6px 8px 0}
+  .plan td.ds,.plan td.mt{grid-column:1/-1}
+  .plan td.x{position:absolute;top:4px;inset-inline-end:4px}
+  .plan td.x::before{display:none}
+  .pdoc{padding:20px 16px;border-radius:12px}
+}
+.pdoc textarea:disabled{min-height:0!important;field-sizing:content}
+.plan td textarea:disabled{field-sizing:content}
 </style>
 
 <div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -737,7 +841,7 @@ table.matrix.att{min-width:0;width:auto}
       <div class="cal-scroll"><div class="cal" id="calGrid"></div></div>
     </div>
     <div class="stack">
-      <h2 id="dayLabel"></h2>
+      <div class="sec-head"><h2 id="dayLabel"></h2><button class="link" type="button" id="calBack" hidden data-t="backUpcoming"></button></div>
       <div class="list" id="dayEvents"></div>
       <form class="card adder" id="eventForm">
         <h3 data-t="addEvent"></h3>
@@ -813,10 +917,7 @@ table.matrix.att{min-width:0;width:auto}
       </form>
     </div>
     <div class="stack">
-      <div class="row">
-        <label for="mxSearch"><span data-t="search"></span><input id="mxSearch" type="search" autocomplete="off"></label>
-        <label for="mxCat"><span data-t="category"></span><select id="mxCat"></select></label>
-      </div>
+      <label for="mxSearch" class="mx-search"><span class="sr" data-t="search"></span><input id="mxSearch" type="search" autocomplete="off"><select id="mxCat" hidden></select></label>
       <div class="list" id="mxList"></div>
     </div>
   </div>
@@ -862,14 +963,14 @@ table.matrix.att{min-width:0;width:auto}
 var T={
 en:{appName:'Shevet Chen',appSub:'Tzofim · Shachbag',exampleData:'Example data',
 demoBanner:'Example mode: made-up people and events so you can try things out. Nothing is saved.',
-tab_home:'Home',tab_people:'People',tab_attendance:'Attendance',tab_calendar:'Calendar',tab_messages:'Messages',tab_access:'Approvals',tab_settings:'Settings',tab_machsan:'Machsan',p_machsan:'Machsan',p_editMachsan:'Manage machsan',search:'Search',category:'Category',allCats:'All',itemsN:'{n} items',inStock:'in storage',availN:'{n} available',request:'Request',reqQty:'How many',reqFrom:'Needed on',reqTo:'Return by',reqNote:'What it\u2019s for',sendReq:'Send request',mxRequests:'Requests',myRequests:'My requests',noReqs:'No requests yet.',st_pending:'Waiting',st_approved:'Approved',st_declined:'Declined',st_returned:'Returned',markReturned:'Mark returned',cancelReq:'Cancel',addItem:'Add an item',itemName:'Item',qty:'Quantity',location:'Where in storage',importTitle:'Import from a sheet',importHelp:'Copy the rows from your sheet (item, quantity, category, location) and paste them here.',importBtn:'Import',tImported:'{n} items imported.',tReq:'Request sent.',noItems:'The machsan is empty. Add items or import them from a sheet.',noMatch:'Nothing matches that search.',tooMany:'Only {n} available.',otherCat:'Other',tab_peulot:'Peulot',merakzimL:'Merakzim',mrkPortal:'Merakzim portal',mrkPortalDesc:'Your own space: merakzim peulot, calendar, chat and to-dos. Only merakzim and Aviv see it.',pfDate:'Date of Peula:',pfGrade:'Grade of Adracha:',pfTheme:'Peula theme(s):',pfTime:'Time:',pfZman:'Zman + Title:',pfDesc:'Description:',pfMats:'Materials:',plNeedDate:'Add the date of the peula first.',newPeula:'New peula',noPeulot:'No peulot yet.',untitled:'Untitled peula',peulaWord:'Peula',plTitle:'Peula name',plTitlePh:'Name your peula',plWrittenBy:'Written by',plPlan:'Schedule',plTime:'Time',plWhat:'What happens',plWho:'Who runs it',plAddRow:'Add a row',plMaterials:'Materials from the machsan',plMatHint:'Search the machsan and add what you need. Each item is requested right away.',plFindItem:'Find an item',plFindPh:'Markers, tape, rope…',availShort:'available',plNotRequested:'not requested',plNoMats:'No materials yet.',plRequested:'{n} requested from the machsan.',plFeedback:'Notes and feedback',plAddNote:'Add note',plNotePh:'Write a note or feedback…',plNoNotes:'No notes yet.',plReviewer:'merakez',plSendBack:'Send back for changes',plApprove:'Approve',plApprovedNote:'Approved!',plApprovedT:'Peula approved.',plSentBack:'Sent back with your notes.',plNeedNote:'Write what needs to change first.',plSubmit:'Submit for review',plSubmitted:'Submitted. The merakzim will review it.',plNeedTitle:'Add the peula theme first.',plUnsubmit:'Take back to edit',plReopen:'Reopen for changes',plDelete:'Delete peula',plDraftHint:'Saved as you type. Submit when it’s ready.',plFixHint:'The merakzim asked for changes. Fix it and submit again.',plWaitHint:'Waiting for a merakez to review.',plRevHint:'Read it, leave notes, then approve or send back.',plApprovedHint:'Approved. Good luck at the peula!',plMissing:'This peula was deleted or you can’t see it.',plPrint:'Print',plSaving:'Saving…',plSavedTxt:'Saved',plToReview:'To review',plAll:'All peulot',plWaiting:'{n} waiting for review',plNoneWaiting:'Nothing waiting for review.',pst_draft:'Draft',pst_submitted:'Waiting for review',pst_changes:'Needs changes',pst_approved:'Approved',gradePortal:'Grade portal',peilimPortal:'Peilim portal',inCharge:'In charge',groupCal:'Group calendar',addGroupEvent:'Add a group event',endTime:'Ends',groupChat:'Group chat',groupChatSub:'Only the {r} and merakzim can send here',groupChatSubM:'Only the merakzim can send here',groupLocked:'Only the {r} and the merakzim can send in this chat.',chenyName:'Cheny The AI',chenyTag:'Knows Tzofim, Shevet Chen and this app',chenyNew:'New chat',chenyAsk:'Ask Cheny',chenyPh:'Ask Cheny anything…',chenyHi:'Hi{n}! I’m Cheny, Shevet Chen’s AI. Ask me anything about Tzofim, our shevet, or how to use this app.',chenyThinking:'Thinking…',chenyOff:'Cheny can’t reach Claude here. Open the app on claude.ai and allow it to use Claude.',chenyBusy:'Too many questions at once. Try again in a minute.',chenyFail:'Something went wrong. Try asking again.',chenyRefused:'I can’t help with that one. Try asking differently.',chenyTeachTitle:'Teach Cheny',chenyTeachHelp:'Anything you write here, Cheny will know: shevet history, where we meet, traditions, songs, rules. Only you can edit this.',tChenyTaught:'Cheny learned it.',chenyS1:'What’s coming up?',chenyS2:'What does a rashgad do?',chenyS3:'How do I request from the machsan?',chenyS4:'Ideas for a peula',groupNeeds:'What each group needs',groupNeedsHelp:'From the machsan sheet. Tap the status to switch between Not packed, Packed and No materials.',noMaterials:'No materials',noNeeds:'Nothing listed yet.',ns_packed:'Packed',ns_notPacked:'Not packed',ns_none:'No materials',importNone:'No rows found. Each row needs at least an item name.',needMore:'Need more',markNeed:'Mark “need more”',gotMore:'Got more',themeTitle:'Appearance',themeLight:'Light',themeDark:'Dark',themeAuto:'Automatic',yourPosition:'Your position',pickPosition:'Choose your position',yourGrade:'Your grade',pickGrade:'Choose your grade',pickGroup:'Choose your peilim group',yourGroup:'Your peilim group',wantsJoin:'Wants to join',tApprovedTo:'Approved and added to {g}.',addManualHelp:'People who sign up are added here automatically when you approve them. Use this only for someone without an account.',viewAs:'View as',viewAdmin:'You (Aviv, full access)',hello:'Hi {n}',helloAnon:'Welcome back',todo:'To do',yourTeam:'Your team',forYou:'Messages for this group',addTask:'Add a task',taskText:'Task',due:'Due',noTasks:'Nothing to do right now.',noTeam:'No one listed yet.',noGroupMsgs:'No messages just for this group.',noGroups:'Group buttons appear here once people have a grade or peilim group.',unitLabel:'Grade or peilim group',tTask:'Task added.',dueOn:'due {d}',attSheet:'Yes / No',attChart:'Absences',addDate:'Add a date',sheetHelp:'Tap a box to mark Yes (came) or No (absent). Tap again to switch.',absHelp:'How many times each person was marked No.',yes:'Yes',no:'No',ofN:'of {n}',noDates:'No dates yet. Add the first one above.',notIn:'Not in this one',myAccount:'My account',accountHelp:'Your username and picture are how everyone sees you in the app.',username:'Username',choosePhoto:'Choose a picture',saveProfile:'Save',languageTitle:'Language',profileNeedSignIn:'Sign in to claude.ai to make an account.',badUsername:'Usernames are 2–20 letters, numbers, dots or underscores.',tProfile:'Account saved.',photoFail:'That picture couldn\u2019t be used. Try a JPG or PNG.',makeAccount:'Make your account',
+tab_home:'Home',tab_people:'People',tab_attendance:'Attendance',tab_calendar:'Calendar',tab_messages:'Messages',tab_access:'Access',tab_settings:'Settings',tab_machsan:'Machsan',p_machsan:'Machsan',p_editMachsan:'Manage machsan',search:'Search',category:'Category',allCats:'All',itemsN:'{n} items',inStock:'in storage',availN:'{n} available',request:'Request',reqQty:'How many',reqFrom:'Needed on',reqTo:'Return by',reqNote:'What it\u2019s for',reqNoteHint:'Optional',searchPh:'Search the machsan…',sendReq:'Send request',mxRequests:'Requests',myRequests:'My requests',noReqs:'No requests yet.',st_pending:'Waiting',st_approved:'Approved',st_declined:'Declined',st_returned:'Returned',markReturned:'Mark returned',cancelReq:'Cancel',addItem:'Add an item',itemName:'Item',qty:'Quantity',location:'Where in storage',importTitle:'Import from a sheet',importHelp:'Copy the rows from your sheet (item, quantity, category, location) and paste them here.',importBtn:'Import',tImported:'{n} items imported.',tReq:'Request sent.',noItems:'The machsan is empty. Add items or import them from a sheet.',noMatch:'Nothing matches that search.',tooMany:'Only {n} available.',otherCat:'Other',tab_peulot:'Peulot',merakzimL:'Merakzim',mrkPortal:'Merakzim portal',mrkPortalDesc:'Your own space: merakzim peulot, calendar, chat and to-dos. Only merakzim and Aviv see it.',pfDate:'Date of Peula:',pfGrade:'Grade of Adracha:',pfTheme:'Peula theme(s):',pfTime:'Time:',pfZman:'Zman + Title:',pfDesc:'Description:',pfMats:'Materials:',plNeedDate:'Add the date of the peula first.',newPeula:'New peula',noPeulot:'No peulot yet.',untitled:'Untitled peula',peulaWord:'Peula',plTitle:'Peula name',plTitlePh:'Name your peula',plWrittenBy:'Written by',plPlan:'Schedule',plTime:'Time',plWhat:'What happens',plWho:'Who runs it',plAddRow:'Add a row',plMaterials:'Materials from the machsan',plMatHint:'Search the machsan and add what you need. Each item is requested right away.',plFindItem:'Find an item',plFindPh:'Markers, tape, rope…',availShort:'available',plNotRequested:'not requested',plNoMats:'No materials yet.',plRequested:'{n} requested from the machsan.',plFeedback:'Notes and feedback',plAddNote:'Add note',plNotePh:'Write a note or feedback…',plNoNotes:'No notes yet.',plReviewer:'merakez',plSendBack:'Send back for changes',plApprove:'Approve',plApprovedNote:'Approved!',plApprovedT:'Peula approved.',plSentBack:'Sent back with your notes.',plNeedNote:'Write what needs to change first.',plSubmit:'Submit for review',plSubmitted:'Submitted. The merakzim will review it.',plNeedTitle:'Add the peula theme first.',plUnsubmit:'Take back to edit',plReopen:'Reopen for changes',plDelete:'Delete peula',plDraftHint:'Saved as you type. Submit when it’s ready.',plFixHint:'The merakzim asked for changes. Fix it and submit again.',plWaitHint:'Waiting for a merakez to review.',plRevHint:'Read it, leave notes, then approve or send back.',plApprovedHint:'Approved. Good luck at the peula!',plMissing:'This peula was deleted or you can’t see it.',plPrint:'Print',plSaving:'Saving…',plSavedTxt:'Saved',plToReview:'To review',plAll:'All peulot',plWaiting:'{n} waiting for review',plNoneWaiting:'Nothing waiting for review.',pst_draft:'Draft',pst_submitted:'Waiting for review',pst_changes:'Needs changes',pst_approved:'Approved',gradePortal:'Grade portal',peilimPortal:'Peilim portal',inCharge:'In charge',groupCal:'Group calendar',addGroupEvent:'Add a group event',endTime:'Ends',groupChat:'Group chat',groupChatSub:'Only the {r} and merakzim can send here',groupChatSubM:'Only the merakzim can send here',groupLocked:'Only the {r} and the merakzim can send in this chat.',chenyName:'Cheny The AI',chenyTag:'Knows Tzofim, Shevet Chen and this app',chenyNew:'New chat',chenyAsk:'Ask Cheny',chenyPh:'Ask Cheny anything…',chenyHi:'Hi{n}! I’m Cheny, Shevet Chen’s AI. Ask me anything about Tzofim, our shevet, or how to use this app.',chenyThinking:'Thinking…',chenyOff:'Cheny can’t reach Claude here. Open the app on claude.ai and allow it to use Claude.',chenyBusy:'Too many questions at once. Try again in a minute.',chenyFail:'Something went wrong. Try asking again.',chenyRefused:'I can’t help with that one. Try asking differently.',chenyTeachTitle:'Teach Cheny',chenyTeachHelp:'Anything you write here, Cheny will know: shevet history, where we meet, traditions, songs, rules. Only you can edit this.',tChenyTaught:'Cheny learned it.',chenyS1:'What’s coming up?',chenyS2:'What does a rashgad do?',chenyS3:'How do I request from the machsan?',chenyS4:'Ideas for a peula',groupNeeds:'What each group needs',groupNeedsHelp:'From the machsan sheet. Tap the status to switch between Not packed, Packed and No materials.',noMaterials:'No materials',noNeeds:'Nothing listed yet.',ns_packed:'Packed',ns_notPacked:'Not packed',ns_none:'No materials',importNone:'No rows found. Each row needs at least an item name.',needMore:'Need more',markNeed:'Mark “need more”',gotMore:'Got more',themeTitle:'Appearance',themeLight:'Light',themeDark:'Dark',themeAuto:'Automatic',yourPosition:'Your position',pickPosition:'Choose your position',yourGrade:'Your grade',pickGrade:'Choose your grade',pickGroup:'Choose your peilim group',yourGroup:'Your peilim group',wantsJoin:'Wants to join',tApprovedTo:'Approved and added to {g}.',addManualHelp:'People who sign up are added here automatically when you approve them. Use this only for someone without an account.',viewAs:'View as',viewAdmin:'You (Aviv, full access)',hello:'Hi {n}',helloAnon:'Welcome back',todo:'To do',yourTeam:'Your team',forYou:'Messages for this group',addTask:'Add a task',taskText:'Task',due:'Due',noTasks:'Nothing to do right now.',noTeam:'No one listed yet.',noGroupMsgs:'No messages just for this group.',noGroups:'Group buttons appear here once people have a grade or peilim group.',unitLabel:'Grade or peilim group',tTask:'Task added.',dueOn:'due {d}',attSheet:'Yes / No',attChart:'Absences',addDate:'Add a date',sheetHelp:'Tap a box to mark Yes (came) or No (absent). Tap again to switch.',absHelp:'How many times each person was marked No.',yes:'Yes',no:'No',ofN:'of {n}',noDates:'No dates yet. Add the first one above.',notIn:'Not in this one',myAccount:'My account',accountHelp:'Your username and picture are how everyone sees you in the app.',username:'Username',choosePhoto:'Choose a picture',saveProfile:'Save',languageTitle:'Language',profileNeedSignIn:'Sign in to claude.ai to make an account.',badUsername:'Usernames are 2–20 letters, numbers, dots or underscores.',tProfile:'Account saved.',photoFail:'That picture couldn\u2019t be used. Try a JPG or PNG.',makeAccount:'Make your account',
 whatToDo:'What do you want to do?',groupsH:'All groups',
 tl_group:'Peulot, to-dos and your group chat',tl_calendar:'When and where things happen',tl_messages:'Updates from the merakzim',tl_machsan:'Find supplies and ask for them',
 tl_peulot:'Read and approve the peulot groups send',tl_peulotN:'{n} waiting for you',tl_people:'Everyone in the shachbag',tl_attendance:'Who came to each peula',tl_access:'Let new people in',tl_accessN:'{n} waiting to join',
-help_calendar:'Tap a day to see what’s happening.',help_messages:'News for the whole shachbag. Only the merakzim post here.',help_machsan:'Search for what you need and tap Request. The merakzim will get it ready.',
+help_calendar:'Here’s what’s coming up. Tap a day to see just that day.',help_messages:'News for the whole shachbag. Only the merakzim post here.',help_machsan:'Find what you need and tap Request. The merakzim will get it ready.',
 help_people:'Everyone in the shachbag, by position.',help_attendance:'Pick a date and tap each name: Yes if they came, No if they didn’t.',help_peulot:'Peulot that groups sent you. Open one, add a note, then send it back or approve it.',
 help_access:'New people ask to join here. Check who they are and tap Approve.',moreOpts:'More options',advanced:'Advanced settings',
-remindersDue:'Reminders to send',comingUp:'Coming up',openCal:'Open calendar',latestMsg:'Latest message',allMsgs:'All messages',
+remindersDue:'Reminders to send',upcomingL:'Upcoming',backUpcoming:'Show upcoming',comingUp:'Coming up',openCal:'Open calendar',latestMsg:'Latest message',allMsgs:'All messages',
 inShachbag:'in the shachbag',nextEvent:'next event',lastAtt:'last attendance',msgsSent:'messages',nothingPlanned:'Nothing yet',
 noDue:'No reminders waiting. When an event’s reminder time comes, it shows up here so you can send it in one tap.',
 noUpcoming:'No upcoming events.',noMsgs:'No messages yet.',sendReminder:'Send reminder',
@@ -913,14 +1014,14 @@ tReqSent:'Request sent.',tApproved:'Approved.',tDeclined:'Declined.',tSaved:'Sav
 remPrefix:'Reminder',ex:'(example)',justNow:'just now',minAgo:'{n} min ago',hAgo:'{n} h ago',waHeader:'Shachbag Chen'},
 he:{appName:'שבט חן',appSub:'תנועת הצופים · שכב״ג',exampleData:'נתוני דוגמה',
 demoBanner:'מצב דוגמה: אנשים ואירועים מומצאים כדי לנסות. שום דבר לא נשמר.',
-tab_home:'בית',tab_people:'אנשים',tab_attendance:'נוכחות',tab_calendar:'לוח שנה',tab_messages:'הודעות',tab_access:'אישורים',tab_settings:'הגדרות',tab_machsan:'מחסן',p_machsan:'מחסן',p_editMachsan:'ניהול המחסן',search:'חיפוש',category:'קטגוריה',allCats:'הכל',itemsN:'{n} פריטים',inStock:'במחסן',availN:'{n} זמינים',request:'בקשה',reqQty:'כמה',reqFrom:'צריך בתאריך',reqTo:'להחזיר עד',reqNote:'בשביל מה',sendReq:'שליחת בקשה',mxRequests:'בקשות',myRequests:'הבקשות שלי',noReqs:'עוד אין בקשות.',st_pending:'ממתין',st_approved:'אושר',st_declined:'נדחה',st_returned:'הוחזר',markReturned:'סימון שהוחזר',cancelReq:'ביטול',addItem:'הוספת פריט',itemName:'פריט',qty:'כמות',location:'איפה במחסן',importTitle:'ייבוא מגיליון',importHelp:'העתיקו את השורות מהגיליון (פריט, כמות, קטגוריה, מיקום) והדביקו כאן.',importBtn:'ייבוא',tImported:'{n} פריטים יובאו.',tReq:'הבקשה נשלחה.',noItems:'המחסן ריק. הוסיפו פריטים או ייבאו מגיליון.',noMatch:'אין תוצאות לחיפוש.',tooMany:'רק {n} זמינים.',otherCat:'אחר',tab_peulot:'פעולות',merakzimL:'מרכזים',mrkPortal:'פורטל מרכזים',mrkPortalDesc:'המקום שלכם: פעולות, לוח שנה, צ׳אט ומשימות של המרכזים. רק המרכזים ואביב רואים אותו.',pfDate:'תאריך הפעולה:',pfGrade:'שכבת הדרכה:',pfTheme:'נושא/י הפעולה:',pfTime:'זמן:',pfZman:'זמן + כותרת:',pfDesc:'תיאור:',pfMats:'ציוד:',plNeedDate:'הוסיפו קודם את תאריך הפעולה.',newPeula:'פעולה חדשה',noPeulot:'עוד אין פעולות.',untitled:'פעולה בלי שם',peulaWord:'פעולה',plTitle:'שם הפעולה',plTitlePh:'שם הפעולה',plWrittenBy:'נכתב על ידי',plPlan:'מערך זמנים',plTime:'זמן',plWhat:'מה קורה',plWho:'מי מעביר',plAddRow:'הוספת שורה',plMaterials:'ציוד מהמחסן',plMatHint:'חפשו במחסן והוסיפו מה שצריך. כל פריט מתבקש מיד.',plFindItem:'חיפוש פריט',plFindPh:'טושים, סלוטייפ, חבל…',availShort:'זמינים',plNotRequested:'לא התבקש',plNoMats:'עוד אין ציוד.',plRequested:'{n} התבקש מהמחסן.',plFeedback:'הערות ומשוב',plAddNote:'הוספת הערה',plNotePh:'כתבו הערה או משוב…',plNoNotes:'עוד אין הערות.',plReviewer:'מרכז/ת',plSendBack:'החזרה לתיקונים',plApprove:'אישור',plApprovedNote:'מאושר!',plApprovedT:'הפעולה אושרה.',plSentBack:'הוחזר עם ההערות שלך.',plNeedNote:'כתבו קודם מה צריך לתקן.',plSubmit:'שליחה לבדיקה',plSubmitted:'נשלח. המרכזים יבדקו.',plNeedTitle:'הוסיפו קודם את נושא הפעולה.',plUnsubmit:'החזרה לעריכה',plReopen:'פתיחה מחדש לתיקונים',plDelete:'מחיקת הפעולה',plDraftHint:'נשמר תוך כדי כתיבה. שלחו כשמוכן.',plFixHint:'המרכזים ביקשו תיקונים. תקנו ושלחו שוב.',plWaitHint:'מחכה לבדיקה של מרכז/ת.',plRevHint:'קראו, השאירו הערות ואז אשרו או החזירו.',plApprovedHint:'מאושר. בהצלחה בפעולה!',plMissing:'הפעולה נמחקה או שאין לך גישה אליה.',plPrint:'הדפסה',plSaving:'שומר…',plSavedTxt:'נשמר',plToReview:'לבדיקה',plAll:'כל הפעולות',plWaiting:'{n} מחכות לבדיקה',plNoneWaiting:'אין פעולות שמחכות לבדיקה.',pst_draft:'טיוטה',pst_submitted:'מחכה לבדיקה',pst_changes:'צריך תיקונים',pst_approved:'מאושר',gradePortal:'פורטל שכבה',peilimPortal:'פורטל פעילים',inCharge:'אחראי/ת',groupCal:'לוח שנה של הקבוצה',addGroupEvent:'הוספת אירוע לקבוצה',endTime:'עד',groupChat:'צ׳אט הקבוצה',groupChatSub:'רק ה{r} והמרכזים יכולים לשלוח כאן',groupChatSubM:'רק המרכזים יכולים לשלוח כאן',groupLocked:'רק ה{r} והמרכזים יכולים לשלוח בצ׳אט הזה.',chenyName:'צ׳ני ה־AI',chenyTag:'יודעת הכל על הצופים, שבט חן והאפליקציה',chenyNew:'צ׳אט חדש',chenyAsk:'שאלו את צ׳ני',chenyPh:'שאלו את צ׳ני כל דבר…',chenyHi:'היי{n}! אני צ׳ני, ה־AI של שבט חן. אפשר לשאול אותי כל דבר על הצופים, על השבט או על האפליקציה.',chenyThinking:'חושבת…',chenyOff:'צ׳ני לא יכולה להתחבר ל־Claude כאן. פתחו את האפליקציה ב־claude.ai ואשרו לה להשתמש ב־Claude.',chenyBusy:'יותר מדי שאלות בבת אחת. נסו שוב עוד דקה.',chenyFail:'משהו השתבש. נסו לשאול שוב.',chenyRefused:'בזה אני לא יכולה לעזור. נסו לשאול אחרת.',chenyTeachTitle:'ללמד את צ׳ני',chenyTeachHelp:'כל מה שתכתבו כאן צ׳ני תדע: היסטוריה של השבט, איפה נפגשים, מסורות, שירים, חוקים. רק את/ה יכול/ה לערוך את זה.',tChenyTaught:'צ׳ני למדה את זה.',chenyS1:'מה קורה בקרוב?',chenyS2:'מה תפקיד הרשג״ד?',chenyS3:'איך מבקשים מהמחסן?',chenyS4:'רעיונות לפעולה',groupNeeds:'מה כל קבוצה צריכה',groupNeedsHelp:'מגיליון המחסן. לחצו על הסטטוס כדי להחליף בין לא נארז, נארז ואין חומרים.',noMaterials:'אין חומרים',noNeeds:'עוד לא נרשם כלום.',ns_packed:'נארז',ns_notPacked:'לא נארז',ns_none:'אין חומרים',importNone:'לא נמצאו שורות. כל שורה צריכה לפחות שם פריט.',needMore:'צריך עוד',markNeed:'סימון ״צריך עוד״',gotMore:'יש מספיק',themeTitle:'מראה',themeLight:'בהיר',themeDark:'כהה',themeAuto:'אוטומטי',yourPosition:'התפקיד שלך',pickPosition:'בחרו תפקיד',yourGrade:'השכבה שלך',pickGrade:'בחרו שכבה',pickGroup:'בחרו צוות פעילים',yourGroup:'צוות הפעילים שלך',wantsJoin:'רוצה להצטרף ל',tApprovedTo:'אושר ונוסף ל{g}.',addManualHelp:'מי שנרשם מתווסף לכאן אוטומטית כשמאשרים אותו. השתמשו בזה רק למי שאין לו חשבון.',viewAs:'תצוגה בתור',viewAdmin:'את/ה (אביב, גישה מלאה)',hello:'היי {n}',helloAnon:'ברוכים הבאים',todo:'משימות',yourTeam:'הצוות שלך',forYou:'הודעות לקבוצה',addTask:'הוספת משימה',taskText:'משימה',due:'עד תאריך',noTasks:'אין משימות כרגע.',noTeam:'עוד אין אף אחד ברשימה.',noGroupMsgs:'אין הודעות רק לקבוצה הזו.',noGroups:'כפתורי הקבוצות יופיעו כאן ברגע שלאנשים יש שכבה או צוות פעילים.',unitLabel:'שכבה או צוות פעילים',tTask:'המשימה נוספה.',dueOn:'עד {d}',attSheet:'כן / לא',attChart:'חיסורים',addDate:'הוספת תאריך',sheetHelp:'לחצו על משבצת כדי לסמן כן (הגיע) או לא (חיסר). לחיצה נוספת מחליפה.',absHelp:'כמה פעמים כל אחד סומן ״לא״.',yes:'כן',no:'לא',ofN:'מתוך {n}',noDates:'עוד אין תאריכים. הוסיפו את הראשון למעלה.',notIn:'לא שייך לזה',myAccount:'החשבון שלי',accountHelp:'שם המשתמש והתמונה הם איך שכולם רואים אותך באפליקציה.',username:'שם משתמש',choosePhoto:'בחירת תמונה',saveProfile:'שמירה',languageTitle:'שפה',profileNeedSignIn:'היכנסו ל־claude.ai כדי ליצור חשבון.',badUsername:'שם משתמש: 2–20 אותיות, מספרים, נקודות או קווים תחתונים.',tProfile:'החשבון נשמר.',photoFail:'אי אפשר להשתמש בתמונה הזו. נסו JPG או PNG.',makeAccount:'יצירת החשבון שלך',
+tab_home:'בית',tab_people:'אנשים',tab_attendance:'נוכחות',tab_calendar:'לוח שנה',tab_messages:'הודעות',tab_access:'הרשאות',tab_settings:'הגדרות',tab_machsan:'מחסן',p_machsan:'מחסן',p_editMachsan:'ניהול המחסן',search:'חיפוש',category:'קטגוריה',allCats:'הכל',itemsN:'{n} פריטים',inStock:'במחסן',availN:'{n} זמינים',request:'בקשה',reqQty:'כמה',reqFrom:'צריך בתאריך',reqTo:'להחזיר עד',reqNote:'בשביל מה',reqNoteHint:'לא חובה',searchPh:'חיפוש במחסן…',sendReq:'שליחת בקשה',mxRequests:'בקשות',myRequests:'הבקשות שלי',noReqs:'עוד אין בקשות.',st_pending:'ממתין',st_approved:'אושר',st_declined:'נדחה',st_returned:'הוחזר',markReturned:'סימון שהוחזר',cancelReq:'ביטול',addItem:'הוספת פריט',itemName:'פריט',qty:'כמות',location:'איפה במחסן',importTitle:'ייבוא מגיליון',importHelp:'העתיקו את השורות מהגיליון (פריט, כמות, קטגוריה, מיקום) והדביקו כאן.',importBtn:'ייבוא',tImported:'{n} פריטים יובאו.',tReq:'הבקשה נשלחה.',noItems:'המחסן ריק. הוסיפו פריטים או ייבאו מגיליון.',noMatch:'אין תוצאות לחיפוש.',tooMany:'רק {n} זמינים.',otherCat:'אחר',tab_peulot:'פעולות',merakzimL:'מרכזים',mrkPortal:'פורטל מרכזים',mrkPortalDesc:'המקום שלכם: פעולות, לוח שנה, צ׳אט ומשימות של המרכזים. רק המרכזים ואביב רואים אותו.',pfDate:'תאריך הפעולה:',pfGrade:'שכבת הדרכה:',pfTheme:'נושא/י הפעולה:',pfTime:'זמן:',pfZman:'זמן + כותרת:',pfDesc:'תיאור:',pfMats:'ציוד:',plNeedDate:'הוסיפו קודם את תאריך הפעולה.',newPeula:'פעולה חדשה',noPeulot:'עוד אין פעולות.',untitled:'פעולה בלי שם',peulaWord:'פעולה',plTitle:'שם הפעולה',plTitlePh:'שם הפעולה',plWrittenBy:'נכתב על ידי',plPlan:'מערך זמנים',plTime:'זמן',plWhat:'מה קורה',plWho:'מי מעביר',plAddRow:'הוספת שורה',plMaterials:'ציוד מהמחסן',plMatHint:'חפשו במחסן והוסיפו מה שצריך. כל פריט מתבקש מיד.',plFindItem:'חיפוש פריט',plFindPh:'טושים, סלוטייפ, חבל…',availShort:'זמינים',plNotRequested:'לא התבקש',plNoMats:'עוד אין ציוד.',plRequested:'{n} התבקש מהמחסן.',plFeedback:'הערות ומשוב',plAddNote:'הוספת הערה',plNotePh:'כתבו הערה או משוב…',plNoNotes:'עוד אין הערות.',plReviewer:'מרכז/ת',plSendBack:'החזרה לתיקונים',plApprove:'אישור',plApprovedNote:'מאושר!',plApprovedT:'הפעולה אושרה.',plSentBack:'הוחזר עם ההערות שלך.',plNeedNote:'כתבו קודם מה צריך לתקן.',plSubmit:'שליחה לבדיקה',plSubmitted:'נשלח. המרכזים יבדקו.',plNeedTitle:'הוסיפו קודם את נושא הפעולה.',plUnsubmit:'החזרה לעריכה',plReopen:'פתיחה מחדש לתיקונים',plDelete:'מחיקת הפעולה',plDraftHint:'נשמר תוך כדי כתיבה. שלחו כשמוכן.',plFixHint:'המרכזים ביקשו תיקונים. תקנו ושלחו שוב.',plWaitHint:'מחכה לבדיקה של מרכז/ת.',plRevHint:'קראו, השאירו הערות ואז אשרו או החזירו.',plApprovedHint:'מאושר. בהצלחה בפעולה!',plMissing:'הפעולה נמחקה או שאין לך גישה אליה.',plPrint:'הדפסה',plSaving:'שומר…',plSavedTxt:'נשמר',plToReview:'לבדיקה',plAll:'כל הפעולות',plWaiting:'{n} מחכות לבדיקה',plNoneWaiting:'אין פעולות שמחכות לבדיקה.',pst_draft:'טיוטה',pst_submitted:'מחכה לבדיקה',pst_changes:'צריך תיקונים',pst_approved:'מאושר',gradePortal:'פורטל שכבה',peilimPortal:'פורטל פעילים',inCharge:'אחראי/ת',groupCal:'לוח שנה של הקבוצה',addGroupEvent:'הוספת אירוע לקבוצה',endTime:'עד',groupChat:'צ׳אט הקבוצה',groupChatSub:'רק ה{r} והמרכזים יכולים לשלוח כאן',groupChatSubM:'רק המרכזים יכולים לשלוח כאן',groupLocked:'רק ה{r} והמרכזים יכולים לשלוח בצ׳אט הזה.',chenyName:'צ׳ני ה־AI',chenyTag:'יודעת הכל על הצופים, שבט חן והאפליקציה',chenyNew:'צ׳אט חדש',chenyAsk:'שאלו את צ׳ני',chenyPh:'שאלו את צ׳ני כל דבר…',chenyHi:'היי{n}! אני צ׳ני, ה־AI של שבט חן. אפשר לשאול אותי כל דבר על הצופים, על השבט או על האפליקציה.',chenyThinking:'חושבת…',chenyOff:'צ׳ני לא יכולה להתחבר ל־Claude כאן. פתחו את האפליקציה ב־claude.ai ואשרו לה להשתמש ב־Claude.',chenyBusy:'יותר מדי שאלות בבת אחת. נסו שוב עוד דקה.',chenyFail:'משהו השתבש. נסו לשאול שוב.',chenyRefused:'בזה אני לא יכולה לעזור. נסו לשאול אחרת.',chenyTeachTitle:'ללמד את צ׳ני',chenyTeachHelp:'כל מה שתכתבו כאן צ׳ני תדע: היסטוריה של השבט, איפה נפגשים, מסורות, שירים, חוקים. רק את/ה יכול/ה לערוך את זה.',tChenyTaught:'צ׳ני למדה את זה.',chenyS1:'מה קורה בקרוב?',chenyS2:'מה תפקיד הרשג״ד?',chenyS3:'איך מבקשים מהמחסן?',chenyS4:'רעיונות לפעולה',groupNeeds:'מה כל קבוצה צריכה',groupNeedsHelp:'מגיליון המחסן. לחצו על הסטטוס כדי להחליף בין לא נארז, נארז ואין חומרים.',noMaterials:'אין חומרים',noNeeds:'עוד לא נרשם כלום.',ns_packed:'נארז',ns_notPacked:'לא נארז',ns_none:'אין חומרים',importNone:'לא נמצאו שורות. כל שורה צריכה לפחות שם פריט.',needMore:'צריך עוד',markNeed:'סימון ״צריך עוד״',gotMore:'יש מספיק',themeTitle:'מראה',themeLight:'בהיר',themeDark:'כהה',themeAuto:'אוטומטי',yourPosition:'התפקיד שלך',pickPosition:'בחרו תפקיד',yourGrade:'השכבה שלך',pickGrade:'בחרו שכבה',pickGroup:'בחרו צוות פעילים',yourGroup:'צוות הפעילים שלך',wantsJoin:'רוצה להצטרף ל',tApprovedTo:'אושר ונוסף ל{g}.',addManualHelp:'מי שנרשם מתווסף לכאן אוטומטית כשמאשרים אותו. השתמשו בזה רק למי שאין לו חשבון.',viewAs:'תצוגה בתור',viewAdmin:'את/ה (אביב, גישה מלאה)',hello:'היי {n}',helloAnon:'ברוכים הבאים',todo:'משימות',yourTeam:'הצוות שלך',forYou:'הודעות לקבוצה',addTask:'הוספת משימה',taskText:'משימה',due:'עד תאריך',noTasks:'אין משימות כרגע.',noTeam:'עוד אין אף אחד ברשימה.',noGroupMsgs:'אין הודעות רק לקבוצה הזו.',noGroups:'כפתורי הקבוצות יופיעו כאן ברגע שלאנשים יש שכבה או צוות פעילים.',unitLabel:'שכבה או צוות פעילים',tTask:'המשימה נוספה.',dueOn:'עד {d}',attSheet:'כן / לא',attChart:'חיסורים',addDate:'הוספת תאריך',sheetHelp:'לחצו על משבצת כדי לסמן כן (הגיע) או לא (חיסר). לחיצה נוספת מחליפה.',absHelp:'כמה פעמים כל אחד סומן ״לא״.',yes:'כן',no:'לא',ofN:'מתוך {n}',noDates:'עוד אין תאריכים. הוסיפו את הראשון למעלה.',notIn:'לא שייך לזה',myAccount:'החשבון שלי',accountHelp:'שם המשתמש והתמונה הם איך שכולם רואים אותך באפליקציה.',username:'שם משתמש',choosePhoto:'בחירת תמונה',saveProfile:'שמירה',languageTitle:'שפה',profileNeedSignIn:'היכנסו ל־claude.ai כדי ליצור חשבון.',badUsername:'שם משתמש: 2–20 אותיות, מספרים, נקודות או קווים תחתונים.',tProfile:'החשבון נשמר.',photoFail:'אי אפשר להשתמש בתמונה הזו. נסו JPG או PNG.',makeAccount:'יצירת החשבון שלך',
 whatToDo:'מה תרצו לעשות?',groupsH:'כל הקבוצות',
 tl_group:'פעולות, משימות והצ׳אט של הקבוצה',tl_calendar:'מתי ואיפה דברים קורים',tl_messages:'עדכונים מהמרכזים',tl_machsan:'למצוא ציוד ולבקש אותו',
 tl_peulot:'לקרוא ולאשר פעולות שהקבוצות שולחות',tl_peulotN:'{n} מחכות לכם',tl_people:'כל השכב״ג',tl_attendance:'מי הגיע לכל פעולה',tl_access:'לאשר אנשים חדשים',tl_accessN:'{n} מחכים להצטרף',
-help_calendar:'לחצו על יום כדי לראות מה קורה בו.',help_messages:'עדכונים לכל השכב״ג. רק המרכזים כותבים כאן.',help_machsan:'חפשו את מה שצריך ולחצו על בקשה. המרכזים יכינו את זה.',
+help_calendar:'אלה האירועים הקרובים. לחצו על יום כדי לראות רק אותו.',help_messages:'עדכונים לכל השכב״ג. רק המרכזים כותבים כאן.',help_machsan:'חפשו את מה שצריך ולחצו על בקשה. המרכזים יכינו את זה.',
 help_people:'כל השכב״ג, לפי תפקיד.',help_attendance:'בחרו תאריך ולחצו על כל שם: כן אם הגיע, לא אם לא.',help_peulot:'פעולות שהקבוצות שלחו לכם. פתחו אחת, הוסיפו הערה, ואז החזירו לתיקון או אשרו.',
 help_access:'אנשים חדשים מבקשים להצטרף כאן. בדקו מי הם ולחצו על אישור.',moreOpts:'עוד אפשרויות',advanced:'הגדרות מתקדמות',
-remindersDue:'תזכורות לשליחה',comingUp:'בקרוב',openCal:'ללוח השנה',latestMsg:'הודעה אחרונה',allMsgs:'כל ההודעות',
+remindersDue:'תזכורות לשליחה',upcomingL:'בקרוב',backUpcoming:'חזרה לאירועים הקרובים',comingUp:'בקרוב',openCal:'ללוח השנה',latestMsg:'הודעה אחרונה',allMsgs:'כל ההודעות',
 inShachbag:'בשכב״ג',nextEvent:'האירוע הבא',lastAtt:'נוכחות אחרונה',msgsSent:'הודעות',nothingPlanned:'עוד אין',
 noDue:'אין תזכורות שמחכות. כשמגיע זמן התזכורת של אירוע, היא תופיע כאן ותוכלו לשלוח בלחיצה.',
 noUpcoming:'אין אירועים קרובים.',noMsgs:'עוד אין הודעות.',sendReminder:'שליחת תזכורת',
@@ -1047,7 +1148,7 @@ var db=null,user=null,meId=null,isOwner=false,isAdmin=false,ready=false,demo=fal
 var curPeula=null,plPane='review',peulaBuilt='',mxQ='',curGroup=null,attPane='sheet',preview=null,showSettings=false,pfPhoto=null,pfDirty=false; // 'gate' | 'parent' (owner previews)
 var gateStep='choose',gatePortal='shachbag';
 var openThread=null,replyUnsub=null,selSess=null;
-var today=new Date(),calMonth=new Date(today.getFullYear(),today.getMonth(),1),selDay=ymd(today);
+var today=new Date(),calMonth=new Date(today.getFullYear(),today.getMonth(),1),selDay=ymd(today),calPicked=false;
 
 function sample(){
   var d=function(o){var x=new Date();x.setDate(x.getDate()+o);return ymd(x)},X=' '+t('ex'),he=lang==='he';
@@ -1149,6 +1250,7 @@ function applyStatic(){
 function syncUnit(){var r=ROLE[$('mRole').value]||ROLES[0];$('mUnitLabel').textContent=r.unit==='grade'?t('grade'):r.unit==='group'?t('peilimGroup'):t('gradeOrGroup')}
 
 /* ================= routing / mode ================= */
+var TAB_ICON={home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>',calendar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 3v3M16 3v3"/></svg>',messages:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-5 4V6a1 1 0 0 1 1-1z"/></svg>',machsan:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7.5 12 3l9 4.5v9L12 21l-9-4.5z"/><path d="M3 7.5 12 12l9-4.5M12 12v9"/></svg>',people:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.3-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18.5 14.8c1.7.8 2.8 2.5 3 5.2"/></svg>',attendance:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m7.5 12.5 3 3 6-7"/></svg>',peulot:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></svg>',access:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 4.5 6v5.5c0 4.6 3.1 8.2 7.5 9.5 4.4-1.3 7.5-4.9 7.5-9.5V6z"/><path d="m9 12 2 2 4-4"/></svg>'};
 var TABS=['home','calendar','messages','machsan','people','attendance','peulot','access','group','peula'];
 function visibleTabs(){return TABS.filter(function(k){return k==='group'||k==='peula'?false:k==='peulot'?(full()||isMrk()):k==='access'?((isOwner||demo)&&!viewAs):can(k)})}
 function mode(){
@@ -1173,7 +1275,7 @@ function route(){
   if(v==='peula'&&m==='app')renderPeula();
   if(v==='peulot'&&m==='app')renderPeulot();
   TABS.forEach(function(n){$('v-'+n).hidden=!(m==='app'&&n===v)});
-  $('tabs').innerHTML=vt.map(function(k){return '<a href="#'+k+'"'+(k===v?' aria-current="page"':'')+'>'+t('tab_'+k)+'</a>'}).join('');
+  $('tabs').innerHTML=vt.map(function(k){return '<a href="#'+k+'"'+(k===v?' aria-current="page"':'')+'>'+(TAB_ICON[k]||'')+'<span>'+t('tab_'+k)+'</span></a>'}).join('');
   if(m==='gate')renderGate();
 }
 window.addEventListener('hashchange',route);
@@ -1241,7 +1343,7 @@ function renderHome(){
   var vm=vaMember(),nm=vm?vm.name:(meId&&prof(meId)&&prof(meId).username);
   $('homeHello').textContent=nm?t('hello',{n:nm}):t('helloAnon');$('homeDate').textContent=niceDate(ymd(today));
   var mg=myGroup(),mrkAll=full()||isMrk();
-  $('groupBtns').innerHTML=mrkAll?allGroups().map(function(g){return groupBtn(g,gkOf(g.role,g.unit)==='merakzim')}).join(''):mg?groupBtn(mg,true):'';
+  $('groupBtns').innerHTML=mrkAll?allGroups().filter(function(g){return g.role!=='rashatz'&&g.role!=='peil'}).map(function(g){return groupBtn(g,gkOf(g.role,g.unit)==='merakzim')}).join(''):mg?groupBtn(mg,true):'';
   var now=new Date(),due=d.events.filter(function(e){var r=remindAt(e);return r&&!e.reminderSent&&r<=now&&evStart(e)>now});
   $('dueHead').hidden=!can('send')||!due.length;$('dueList').hidden=!can('send')||!due.length;
   $('dueList').innerHTML=due.length?due.map(function(e){return '<div class="due"><div class="grow"><b>'+esc(e.title)+'</b> <span class="muted small">'+niceDate(e.date)+(e.time?' · '+tm(e):'')+' · '+esc(aname(e))+'</span></div><button class="btn sm primary" data-remind="'+esc(e.id)+'" type="button">'+t('sendReminder')+'</button></div>'}).join(''):'<div class="empty small">'+t('noDue')+'</div>';
@@ -1319,7 +1421,7 @@ function renderPeulot(){
 }
 function planRows(pl,ed){var rows=(pl.plan&&pl.plan.length?pl.plan:[{},{},{}]),dis=ed?'':' disabled';
   var cell=function(i,k,lab,big){return '<textarea rows="'+(big?3:2)+'" dir="auto" data-plan="'+i+'" data-pk="'+k+'" aria-label="'+lab+'"'+dis+'>'+esc((rows[i]||{})[k]||'')+'</textarea>'};
-  return rows.map(function(r,i){return '<tr><td class="tm">'+cell(i,'tm',t('pfTime'))+'</td><td class="zm">'+cell(i,'title',t('pfZman'))+'</td><td>'+cell(i,'desc',t('pfDesc'),true)+'</td><td class="mt">'+cell(i,'mats',t('pfMats'))+'</td><td class="x">'+(ed&&rows.length>1?'<button type="button" class="mx-x" data-plan-del="'+i+'" aria-label="'+t('del')+'">×</button>':'')+'</td></tr>'}).join('')}
+  return rows.map(function(r,i){return '<tr><td class="tm" data-l="'+esc(t('pfTime'))+'">'+cell(i,'tm',t('pfTime'))+'</td><td class="zm" data-l="'+esc(t('pfZman'))+'">'+cell(i,'title',t('pfZman'))+'</td><td class="ds" data-l="'+esc(t('pfDesc'))+'">'+cell(i,'desc',t('pfDesc'),true)+'</td><td class="mt" data-l="'+esc(t('pfMats'))+'">'+cell(i,'mats',t('pfMats'))+'</td><td class="x">'+(ed&&rows.length>1?'<button type="button" class="mx-x" data-plan-del="'+i+'" aria-label="'+t('del')+'">×</button>':'')+'</td></tr>'}).join('')}
 function matsHtml(pl,ed){var ms=pl.materials||[],rq=D().mxReqs||[];
   return ms.length?ms.map(function(m,i){var r=rq.filter(function(x){return x.id===m.reqId})[0],st=r?r.status:'';
     return '<div class="mat-row"><div class="grow"><b dir="auto">'+esc(m.name)+'</b> <span class="muted">× '+(+m.qty||1)+'</span></div>'+(st?'<span class="st '+esc(st)+'">'+t('st_'+st)+'</span>':'<span class="muted small">'+t('plNotRequested')+'</span>')+(ed?'<button type="button" class="mx-x" data-mat-del="'+i+'" aria-label="'+t('del')+' – '+esc(m.name)+'">×</button>':'')+'</div>'}).join(''):'<div class="muted small">'+t('plNoMats')+'</div>'}
@@ -1416,17 +1518,17 @@ function renderMachsan(){
   var cv=$('mxCat').value;$('mxCat').innerHTML='<option value="">'+t('allCats')+'</option><option value="__need"'+(cv==='__need'?' selected':'')+'>'+t('needMore')+'</option>'+cl.map(function(c){return '<option'+(c===cv?' selected':'')+'>'+esc(c)+'</option>'}).join('');
   $('mxCats').innerHTML=cl.map(function(c){return '<option value="'+esc(c)+'">'}).join('');
   $('mxCount').textContent=t('itemsN',{n:items.length});
-  var q=norm($('mxSearch').value);
+  $('mxSearch').placeholder=t('searchPh');var q=norm($('mxSearch').value);
   var shown=items.filter(function(i){return (!cv||(cv==='__need'?i.needMore:i.category===cv))&&(!q||norm(i.name+' '+(i.category||'')+' '+(i.location||'')).indexOf(q)>=0)}).sort(function(a,b){return String(a.category||'').localeCompare(String(b.category||''))||String(a.name).localeCompare(String(b.name))});
   $('mxList').innerHTML=!items.length?'<div class="empty">'+t('noItems')+'</div>':!shown.length?'<div class="empty">'+t('noMatch')+'</div>':(function(){var lastCat=null,out='';shown.forEach(function(i){
     var cat=i.category||t('otherCat');if(cat!==lastCat){out+='<div class="mx-cat">'+esc(cat)+'</div>';lastCat=cat}
     var num=typeof i.qty==='number',used=num?mxOut(i.id):0,av=num?i.qty-used:Infinity,shownQ=num?String(i.qty):(i.amount||'');
     var sub=[];if(i.location)sub.push(esc(i.location));if(num&&used>0)sub.push('<span class="mx-avail'+(av<=0?' low':'')+'">'+t('availN',{n:Math.max(av,0)})+'</span>');
     var h='<div class="mx-row"><div class="grow"><span class="mx-name">'+esc(i.name)+'</span>'+(i.needMore?'<span class="mx-need">'+t('needMore')+'</span>':'')+(sub.length?'<div class="muted small">'+sub.join(' · ')+'</div>':'')+'</div>'+
-      (ed?'<input class="mx-amt-in" dir="auto" type="text" id="mq-'+esc(i.id)+'" data-mxqty="'+esc(i.id)+'" value="'+esc(shownQ)+'" aria-label="'+t('qty')+' – '+esc(i.name)+'">':'<span class="mx-amt" dir="auto">'+esc(shownQ||'–')+'</span>')+
+      '<span class="mx-amt" dir="auto">'+esc(shownQ||'–')+'</span>'+
       '<button class="btn sm'+(mxOpen===i.id?' primary':'')+'" type="button" data-mxreq="'+esc(i.id)+'"'+(num&&av<=0?' disabled':'')+'>'+t('request')+'</button>'+
-      (ed?'<span class="confirm" data-wrap="mi-'+esc(i.id)+'"><button class="mx-x" type="button" data-mxdel="'+esc(i.id)+'" aria-label="'+t('del')+' – '+esc(i.name)+'">×</button></span>':'');
-    if(mxOpen===i.id)h+='<form class="mx-req-form" data-item="'+esc(i.id)+'"><div class="row"><label for="rq-n">'+t('reqQty')+'<input id="rq-n" type="number" min="1"'+(num?' max="'+av+'"':'')+' value="1" required></label><label for="rq-f">'+t('reqFrom')+'<input id="rq-f" type="date" required value="'+ymd(today)+'"></label><label for="rq-t">'+t('reqTo')+'<input id="rq-t" type="date"></label></div><label for="rq-note">'+t('reqNote')+'<input id="rq-note"></label><button class="btn primary sm" type="submit" style="justify-self:start">'+t('sendReq')+'</button></form>';
+      '';
+    if(mxOpen===i.id)h+='<form class="mx-req-form" data-item="'+esc(i.id)+'"><div class="mx-req-line"><label for="rq-n">'+t('reqQty')+'<input id="rq-n" type="number" min="1"'+(num?' max="'+av+'"':'')+' value="1" required></label><label for="rq-note" class="grow">'+t('reqNote')+'<input id="rq-note" placeholder="'+t('reqNoteHint')+'"></label><button class="btn primary" type="submit">'+t('sendReq')+'</button></div></form>';
     out+=h+'</div>'});return out})();
   var nd=(d.needs||[]).slice().sort(function(a,b){return (a.order||0)-(b.order||0)});
   $('mxNeeds').innerHTML=nd.length?nd.map(function(n){var st=n.status||'notPacked';
@@ -1500,10 +1602,13 @@ function renderCalendar(){
   var st=new Date(calMonth);st.setDate(1-st.getDay());var by={};d.events.forEach(function(e){(by[e.date]=by[e.date]||[]).push(e)});
   var h=DOWS[lang].map(function(x){return '<div class="dow">'+x+'</div>'}).join(''),td=ymd(today);
   for(var i=0;i<42;i++){var x=new Date(st);x.setDate(st.getDate()+i);var k=ymd(x),n=(by[k]||[]).length;
-    h+='<button type="button" class="day'+(x.getMonth()!==calMonth.getMonth()?' out':'')+(k===td?' today':'')+'" data-day="'+k+'" aria-pressed="'+(k===selDay)+'" aria-label="'+niceDate(k)+'"><span>'+x.getDate()+'</span><span class="ds">'+'<i></i>'.repeat(Math.min(n,3))+'</span></button>'}
-  $('calGrid').innerHTML=h;$('dayLabel').textContent=niceDate(selDay);
+    h+='<button type="button" class="day'+(x.getMonth()!==calMonth.getMonth()?' out':'')+(k===td?' today':'')+'" data-day="'+k+'" aria-pressed="'+(calPicked&&k===selDay)+'" aria-label="'+niceDate(k)+'"><span>'+x.getDate()+'</span><span class="ds">'+'<i></i>'.repeat(Math.min(n,3))+'</span></button>'}
+  $('calGrid').innerHTML=h;
+  if(!calPicked){$('dayLabel').textContent=t('upcomingL');$('calBack').hidden=true;var up2=upcoming().slice(0,8);
+    $('dayEvents').innerHTML=up2.length?up2.map(evCard).join(''):'<div class="empty small">'+t('noUpcoming')+'</div>'}
+  else{$('dayLabel').textContent=niceDate(selDay);$('calBack').hidden=false;
   var evs=(by[selDay]||[]).sort(function(a,b){return (a.time||'').localeCompare(b.time||'')});
-  $('dayEvents').innerHTML=evs.length?evs.map(function(e){return evRow(e,true)}).join(''):'<div class="empty small">'+t('nothingDay')+'</div>';
+  $('dayEvents').innerHTML=evs.length?evs.map(function(e){return evRow(e,true)}).join(''):'<div class="empty small">'+t('nothingDay')+'</div>'}
   $('eventForm').hidden=!can('editEvents');
   if(!$('eDate').value||$('eDate').dataset.auto!=='0')$('eDate').value=selDay;
 }
@@ -1640,14 +1745,14 @@ document.addEventListener('click',function(ev){
   if((k=b.dataset.needst)){if(!ok('editMachsan'))return;var nn=S.needs.filter(function(n){return n.id===k})[0];if(!nn)return;var cyc={notPacked:'packed',packed:'none',none:'notPacked'},ns=cyc[nn.status||'notPacked'];serial('mxNeeds/'+k,function(){return db.doc('mxNeeds/'+k).update({status:ns})}).then(function(){},fail);return}
   if((k=b.dataset.mxreq)){mxOpen=mxOpen===k?null:k;renderMachsan();var n=$('rq-n');if(n)n.focus();return}
   if((k=b.dataset.mxneed)){if(!ok('editMachsan'))return;var itn=S.items.filter(function(i){return i.id===k})[0];if(!itn)return;serial('machsan/'+k,function(){return db.doc('machsan/'+k).update({needMore:!itn.needMore})}).then(function(){toast(t('tSaved'))},fail);return}
-  if((k=b.dataset.mxdel)){if(!ok('editMachsan'))return;confirmIn('mi-'+k,t('delQ'),function(){db.doc('machsan/'+k).delete().then(function(){toast(t('tRemoved'))},fail)});return}
   if((k=b.dataset.mxst)){if(!ok('editMachsan'))return;var rid=b.dataset.rid;serial('machsanReq/'+rid,function(){return db.doc('machsanReq/'+rid).update({status:k,decidedBy:meId,decidedAt:Date.now()})}).then(function(){toast(t('tSaved'))},fail);return}
   if((k=b.dataset.mxcancel)){if(!ok())return;db.doc('machsanReq/'+k).delete().then(function(){toast(t('tRemoved'))},fail);return}
   if((k=b.dataset.themeSet)){theme=k;try{localStorage.setItem('shachbag-theme',k)}catch(e){}applyTheme();return}
   if((k=b.dataset.lang)){lang=k;try{localStorage.setItem('shachbag-lang',k)}catch(e){}if(demo)SAMPLE=Object.assign(sample(),{access:SAMPLE.access});applyStatic();renderApp();return}
   if((k=b.dataset.portal)){gatePortal=k;gateStep='form';renderGate();var n=$('jName');if(n)n.focus();return}
   if((k=b.dataset.gate)){if(k==='exit'){preview=null;gateStep='choose';renderApp();return}if(k==='edit'){gatePortal=(myReq&&myReq.portal)||'shachbag';gateStep='form'}else gateStep=k;$('gateBox').innerHTML='';renderGate();return}
-  if((k=b.dataset.day)){selDay=k;var dd=parseD(k);if(dd.getMonth()!==calMonth.getMonth())calMonth=new Date(dd.getFullYear(),dd.getMonth(),1);$('eDate').dataset.auto='1';renderCalendar();return}
+  if(b.id==='calBack'){calPicked=false;selDay=ymd(today);renderCalendar();return}
+  if((k=b.dataset.day)){if(calPicked&&selDay===k){calPicked=false;selDay=ymd(today);renderCalendar();return}calPicked=true;selDay=k;var dd=parseD(k);if(dd.getMonth()!==calMonth.getMonth())calMonth=new Date(dd.getFullYear(),dd.getMonth(),1);$('eDate').dataset.auto='1';renderCalendar();return}
   if((k=b.dataset.group)){var sp=k.split('|');curGroup={role:sp[0],unit:sp.slice(1).join('|')};if(location.hash==='#group')renderApp();else location.hash='#group';scrollTo(0,0);return}
   if((k=b.dataset.delTask)){if(!curGroup||!isLead(curGroup)){toast(t('tNoPerm'));return}if(!ok())return;confirmIn('tk-'+k,t('delQ'),function(){db.doc('tasks/'+k).delete().then(function(){toast(t('tRemoved'))},fail)});return}
   if((k=b.dataset.att)){attPane=k;renderAttendance();return}
@@ -1688,7 +1793,7 @@ document.addEventListener('submit',function(ev){
   var f=ev.target;ev.preventDefault();
   if(f.classList.contains('mx-req-form')){if(!ok('machsan'))return;var it=S.items.filter(function(i){return i.id===f.dataset.item})[0];if(!it)return;
     var nq2=parseInt($('rq-n').value,10)||0,av2=typeof it.qty==='number'?it.qty-mxOut(it.id):Infinity;if(nq2<1)return;if(nq2>av2){toast(t('tooMany',{n:av2}));return}
-    db.collection('machsanReq').add({itemId:it.id,itemName:it.name,qty:nq2,from:$('rq-f').value||ymd(today),to:$('rq-t').value||'',note:$('rq-note').value.trim(),requesterId:meId,status:'pending',createdAt:Date.now()}).then(function(){mxOpen=null;document.activeElement&&document.activeElement.blur();renderMachsan();toast(t('tReq'))},fail);return}
+    db.collection('machsanReq').add({itemId:it.id,itemName:it.name,qty:nq2,from:ymd(today),to:'',note:$('rq-note').value.trim(),requesterId:meId,status:'pending',createdAt:Date.now()}).then(function(){mxOpen=null;document.activeElement&&document.activeElement.blur();renderMachsan();toast(t('tReq'))},fail);return}
   if(f.id==='mxItemForm'){if(!ok('editMachsan'))return;var nm2=$('mxName').value.trim();if(!nm2)return;
     db.collection('machsan').add(Object.assign({name:nm2},mxParse($('mxQty').value),{category:$('mxCatIn').value.trim(),location:$('mxLoc').value.trim(),needMore:false,createdAt:Date.now()})).then(function(){toast(t('tAdded',{n:nm2}));$('mxName').value='';$('mxQty').value='';$('mxLoc').value='';$('mxName').focus()},fail);return}
   if(f.id==='mxImport'){if(!ok('editMachsan'))return;
