@@ -153,10 +153,41 @@
   var ownerP = signedIn.then(function (u) {
     var ref = fs.doc('settings/owner');
     return ref.get().then(function (s) {
-      if (s.exists) return s.data().uid === u.uid;
+      if (s.exists) { var mine = s.data().uid === u.uid; if (mine) topUp(); return mine; }
       return ref.set({ uid: u.uid, claimedAt: Date.now() }).then(function () { seed(); return true; }, function () { return false; });
     }).catch(function () { return false; });
   });
+
+  /* owner only, once per seed version: add any starting machsan items / group needs that are missing,
+     and the calendar if it is empty. Never overwrites what is already there. */
+  var SEED_V = 2;
+  function topUp() {
+    var flag = fs.doc('settings/seeded');
+    flag.get().then(function (f) {
+      if (f.exists && (f.data().v || 0) >= SEED_V) return;
+      return fetch('seed.json?v=' + SEED_V).then(function (r) { return r.json(); }).then(function (data) {
+        var cols = ['machsan', 'mxNeeds'];
+        return Promise.all(cols.map(function (c) { return fs.collection(c).get(); })).then(function (snaps) {
+          var writes = [];
+          cols.forEach(function (c, i) {
+            var have = {}; snaps[i].docs.forEach(function (d) { have[d.id] = 1; });
+            Object.keys(data[c] || {}).forEach(function (id) { if (!have[id]) writes.push([c + '/' + id, data[c][id]]); });
+          });
+          return fs.collection('events').limit(1).get().then(function (ev) {
+            if (ev.empty) Object.keys(data.events || {}).forEach(function (id) { writes.push(['events/' + id, data.events[id]]); });
+            return fs.doc('settings/access').get();
+          }).then(function (acc) {
+            if (!acc.exists && data.settings && data.settings.access) writes.push(['settings/access', data.settings.access]);
+            var chain = Promise.resolve();
+            for (var k = 0; k < writes.length; k += 400) (function (part) {
+              chain = chain.then(function () { var b = fs.batch(); part.forEach(function (w) { b.set(fs.doc(w[0]), w[1]); }); return b.commit(); });
+            })(writes.slice(k, k + 400));
+            return chain.then(function () { console.info('Added ' + writes.length + ' starting items'); return flag.set({ v: SEED_V, at: Date.now() }); });
+          });
+        });
+      });
+    }).catch(function (e) { console.warn('Top-up skipped', e); });
+  }
 
   /* copy the starting data (machsan, calendar, group needs, access) the first time */
   function seed() {
