@@ -634,7 +634,7 @@ header{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;bac
 .menu-head{display:flex;align-items:center;justify-content:space-between;padding:18px 16px 10px 20px;font-size:1.3rem;font-weight:700}
 .menu-x{border:0;background:none;font-size:1.7rem;line-height:1;color:var(--muted);cursor:pointer;width:40px;height:40px;border-radius:10px}
 #tabsWrap .tabs{display:flex!important;flex-direction:column!important;gap:2px!important;padding:4px 10px 20px!important;justify-content:flex-start!important;overflow:visible!important}
-#tabsWrap .tabs a,#tabsWrap .tabs a.extra{display:flex!important;flex-direction:row!important;align-items:center;gap:14px!important;flex:none!important;width:auto!important;min-width:0!important;padding:13px 12px!important;border:0!important;border-radius:10px;font-size:1.02rem!important;font-weight:500;color:var(--ink)!important;white-space:nowrap}
+#tabsWrap .tabs a,#tabsWrap .tabs a.extra{display:flex!important;flex-direction:row!important;align-items:center;justify-content:flex-start!important;text-align:start;gap:14px!important;flex:none!important;width:auto!important;min-width:0!important;padding:13px 12px!important;border:0!important;border-radius:10px;font-size:1.02rem!important;font-weight:500;color:var(--ink)!important;white-space:nowrap}
 #tabsWrap .tabs a svg{width:22px!important;height:22px!important;color:var(--muted);opacity:1}
 #tabsWrap .tabs a:hover{background:rgba(0,0,0,.04)}
 #tabsWrap .tabs a[aria-current="page"]{background:rgba(46,107,82,.1);color:var(--green)!important}
@@ -652,6 +652,7 @@ body.on-messages{overflow:hidden}
 body.on-messages #v-messages .chat{position:fixed;top:var(--hdr,64px);left:0;right:0;bottom:0;height:auto!important;min-height:0!important;max-width:none!important;margin:0!important;border:0!important;border-radius:0!important;z-index:4;padding-bottom:env(safe-area-inset-bottom,0px)}
 body.on-messages #v-messages .chat-body{padding-inline:max(16px,calc((100vw - 860px)/2))}
 body.on-messages #v-messages .chat-head,body.on-messages #v-messages .chat-compose{padding-inline:max(16px,calc((100vw - 860px)/2))}
+#tabsWrap .tabs a.tab-set{margin-top:10px;position:relative}#tabsWrap .tabs a.tab-set::before{content:'';position:absolute;top:-6px;left:12px;right:12px;border-top:1px solid var(--line)}
 </style>
 
 <div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
@@ -810,7 +811,6 @@ body.on-messages #v-messages .chat-head,body.on-messages #v-messages .chat-compo
 <use xlink:href="#glyph-0-6" x="865.9203" y="836.0391"/>
 </g>
 </svg></a></h1>
-      <small data-t="appSub"></small>
     </div>
     <div class="tools">
       <button class="me-btn" type="button" id="meBtn"></button>
@@ -1415,7 +1415,7 @@ function mode(){
 function route(){
   var m=mode();
   $('gate').hidden=m!=='gate';$('parent').hidden=m!=='parent';$('settingsView').hidden=m!=='settings';
-  $('tabsWrap').hidden=m!=='app';$('menuBtn').hidden=m!=='app';if(m!=='app')menuOpen(false);
+  var navOn=m==='app'||m==='settings';$('tabsWrap').hidden=!navOn;$('menuBtn').hidden=!navOn;if(!navOn)menuOpen(false);
   $('demoWrap').hidden=!(isAdmin||!window.claude);
   $('parentBack').hidden=!preview;
   var vt=visibleTabs();
@@ -1431,13 +1431,14 @@ function route(){
   if(v==='peulot'&&m==='app')renderPeulot();
   TABS.forEach(function(n){$('v-'+n).hidden=!(m==='app'&&n===v)});
   var onMsg=m==='app'&&v==='messages';document.body.classList.toggle('on-messages',onMsg);if(onMsg){var hh=document.querySelector('header');document.documentElement.style.setProperty('--hdr',(hh?hh.getBoundingClientRect().bottom:64)+'px');var mb=$('msgList');if(mb)setTimeout(function(){mb.scrollTop=mb.scrollHeight},30)}
-  $('tabs').innerHTML=vt.map(function(k){return '<a href="#'+k+'"'+(extra.indexOf(k)>=0?' class="extra"':'')+(k===v?' aria-current="page"':'')+'>'+(TAB_ICON[k]||'')+'<span>'+t('tab_'+k)+'</span></a>'}).join('')+(useMore?'<a href="#more" class="tab-more"'+(v==='more'||extra.indexOf(v)>=0?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg><span>'+t('tab_more')+'</span></a>':'');
+  $('tabs').innerHTML=vt.map(function(k){return '<a href="#'+k+'"'+(extra.indexOf(k)>=0?' class="extra"':'')+(k===v&&m==='app'?' aria-current="page"':'')+'>'+(TAB_ICON[k]||'')+'<span>'+t('tab_'+k)+'</span></a>'}).join('')+(useMore?'<a href="#more" class="tab-more"'+(v==='more'||extra.indexOf(v)>=0?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg><span>'+t('tab_more')+'</span></a>':'')+'<a href="#home" class="tab-set" data-open-settings="1"'+(m==='settings'?' aria-current="page"':'')+'><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>'+t('tab_settings')+'</span></a>';
   if(m==='gate')renderGate();
   if(m==='app'&&!tourChecked){tourChecked=true;setTimeout(tourAuto,900)}
 }
 window.addEventListener('hashchange',route);
 function menuOpen(on){var w=$('tabsWrap');if(!w)return;w.classList.toggle('open',!!on);$('menuShade').hidden=!on;$('menuBtn').setAttribute('aria-expanded',on?'true':'false');document.body.classList.toggle('menu-on',!!on);if(on){var a=w.querySelector('[aria-current=page]')||w.querySelector('a');if(a)a.focus({preventScroll:true})}}
-document.addEventListener('click',function(e){var x=e.target.closest&&e.target.closest('#menuBtn,#menuClose,#menuShade,#tabs a');if(!x)return;if(x.id==='menuBtn')menuOpen(!$('tabsWrap').classList.contains('open'));else menuOpen(false)});
+document.addEventListener('click',function(e){var x=e.target.closest&&e.target.closest('#menuBtn,#menuClose,#menuShade,#tabs a');if(!x)return;if(x.id==='menuBtn'){menuOpen(!$('tabsWrap').classList.contains('open'));return}menuOpen(false);
+  if(x.matches('#tabs a')){if(x.dataset.openSettings){e.preventDefault();if(!showSettings){showSettings=true;pfPhoto=null;pfDirty=false;renderApp()}scrollTo(0,0);return}if(showSettings){showSettings=false;pfPhoto=null;pfDirty=false;if(x.getAttribute('href')===location.hash){e.preventDefault();renderApp()}else setTimeout(renderApp,0);scrollTo(0,0)}}});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('tabsWrap').classList.contains('open')){menuOpen(false);$('menuBtn').focus()}});
 /* ================= in-app tutorial ================= */
 var tourChecked=false,tourSteps=null,tourI=0,tourKeyNow='';
