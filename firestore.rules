@@ -38,9 +38,27 @@ service cloud.firestore {
       allow write: if isOwner() || self(uid);
     }
     // Usernames and profile pictures.
+    // A profile's username must be claimed in /usernames by the same person,
+    // and an approved person can change it only once every 15 days.
+    function profileOk() {
+      let d = request.resource.data;
+      let k = /databases/$(database)/documents/usernames/$(d.username.lower());
+      return exists(k) && get(k).data.uid == request.auth.uid && (
+        resource == null || resource.data.get('username', '') == ''
+        || (resource.data.username == d.username && d.get('nameChangedAt', 0) == resource.data.get('nameChangedAt', 0))
+        || (resource.data.username != d.username && d.get('nameChangedAt', 0) > request.time.toMillis() - 600000
+            && (!approved() || request.time.toMillis() >= resource.data.get('nameChangedAt', 0) + 1296000000)));
+    }
     match /profiles/{uid} {
       allow read: if member() || self(uid);
-      allow write: if isOwner() || self(uid);
+      allow write: if isOwner() || (self(uid) && profileOk());
+    }
+    // One username per person: the first to claim a name keeps it.
+    match /usernames/{key} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.uid == request.auth.uid;
+      allow update: if signedIn() && resource.data.uid == request.auth.uid && request.resource.data.uid == request.auth.uid;
+      allow delete: if isOwner() || (signedIn() && resource.data.uid == request.auth.uid);
     }
     match /users/{uid} {
       allow read: if member() || self(uid);
@@ -53,7 +71,7 @@ service cloud.firestore {
     // Everything else (roster, calendar, messages, machsan, peulot...):
     // only approved shachbag members and the owner.
     match /{col}/{id} {
-      allow read, write: if member() && !(col in ['settings', 'approvals', 'requests', 'profiles', 'users', 'attendance']);
+      allow read, write: if member() && !(col in ['settings', 'approvals', 'requests', 'profiles', 'users', 'attendance', 'usernames']);
     }
   }
 }
