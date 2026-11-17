@@ -22,7 +22,7 @@
 <title>Shevet Chen</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Heebo:wght@300;400;500&display=swap">
 <style>
 /* Layout: quiet off-white page, white header with a small green logo pill and text tabs, content in a 1040px column of white cards; pink & green only as small accents */
 :root{
@@ -653,6 +653,11 @@ body.on-messages #v-messages .chat{position:fixed;top:var(--hdr,64px);left:0;rig
 body.on-messages #v-messages .chat-body{padding-inline:max(16px,calc((100vw - 860px)/2))}
 body.on-messages #v-messages .chat-head,body.on-messages #v-messages .chat-compose{padding-inline:max(16px,calc((100vw - 860px)/2))}
 #tabsWrap .tabs a.tab-set{margin-top:10px;position:relative}#tabsWrap .tabs a.tab-set::before{content:'';position:absolute;top:-6px;left:12px;right:12px;border-top:1px solid var(--line)}
+
+/* v34 font: Varela Round */
+:root,:root[data-theme="light"],:root[data-theme="dark"]{--display:"Varela Round","Heebo",-apple-system,system-ui,sans-serif;--body:"Varela Round","Heebo",-apple-system,system-ui,sans-serif}
+body,h1,h2,h3,button,input,select,textarea{font-family:var(--body)}
+h1,h2,h3,.large-title,b,strong{letter-spacing:0}
 </style>
 
 <div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
