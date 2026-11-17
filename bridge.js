@@ -20,8 +20,8 @@
     '#fbGate .err{color:#b4436c;font-size:.85rem;min-height:1.2em;margin-top:10px}' +
     '#fbGate .link{background:none;border:0;color:#b4436c;text-decoration:underline;width:auto;padding:4px;margin-top:6px;font-size:.85rem}' +
     '#fbSignOut{font:inherit;cursor:pointer;border-radius:999px;padding:6px 14px;border:1px solid #e9e1d6;background:#fff;color:#b4436c;font-size:.85rem}' +
-    /* Cheny needs the claude.ai AI connection, which a normal website does not have yet */
-    '#chenyBtn,#chenyPanel{display:none!important}';
+    /* Cheny shows only once its helper address is set in firebase-config.js */
+    (window.CHENY_URL ? '' : '#chenyBtn,#chenyPanel{display:none!important}');
   document.head.appendChild(css);
 
   var HE = (function () { try { return (localStorage.getItem('shachbag-lang') || 'en') === 'he'; } catch (e) { return false; } })();
@@ -234,10 +234,45 @@
     }
   };
 
+  /* Cheny: send the conversation to the helper, which keeps the AI key secret */
+  function chenySample(input, opts) {
+    opts = opts || {};
+    var u = auth.currentUser;
+    if (!u) return Promise.reject(new Error(HE ? 'צריך להתחבר.' : 'Please sign in.'));
+    return u.getIdToken().then(function (tok) {
+      return fetch(window.CHENY_URL, {
+        method: 'POST', signal: opts.signal,
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok },
+        body: JSON.stringify({ messages: input })
+      });
+    }).then(function (res) {
+      if (!res.ok) return res.json().catch(function () { return {}; }).then(function (j) { throw new Error(j.error || ('Error ' + res.status)); });
+      var reader = res.body.getReader(), dec = new TextDecoder(), buf = '', text = '', stop = '';
+      function line(l) {
+        if (l.indexOf('data:') !== 0) return;
+        var ev; try { ev = JSON.parse(l.slice(5)); } catch (e) { return; }
+        if (ev.type === 'content_block_delta' && ev.delta && ev.delta.type === 'text_delta') { text += ev.delta.text; if (opts.onText) opts.onText({ text: text }); }
+        else if (ev.type === 'message_delta' && ev.delta && ev.delta.stop_reason) stop = ev.delta.stop_reason;
+        else if (ev.type === 'error') throw new Error((ev.error && ev.error.message) || 'Cheny had a problem.');
+      }
+      function pump() {
+        return reader.read().then(function (r) {
+          if (r.done) { if (buf) line(buf.trim()); if (stop === 'refusal' && !text) text = HE ? 'אני לא יכולה לעזור עם זה.' : 'I can\u2019t help with that one.'; return { text: text }; }
+          buf += dec.decode(r.value, { stream: true });
+          var parts = buf.split('\n'); buf = parts.pop();
+          parts.forEach(function (l) { line(l.trim()); });
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
+
   window.claude = {
     use: function (what) {
       if (what === 'db') return signedIn.then(function () { return db; });
       if (what === 'user') return signedIn.then(function () { return user; });
+      if (what === 'sample') return Promise.resolve(window.CHENY_URL ? chenySample : null);
       return Promise.reject(new Error(what + ' is not available on this site'));
     }
   };

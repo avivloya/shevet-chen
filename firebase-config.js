@@ -9,3 +9,6 @@ window.FIREBASE_CONFIG = {
   appId: "1:714314758141:web:1c4e6e6542ac82a5f94b94",
   measurementId: "G-C2H9C67M2N"
 };
+
+// Address of the Cheny helper (Cloudflare Worker). Leave empty to hide Cheny.
+window.CHENY_URL = "";
