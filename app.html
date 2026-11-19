@@ -49,7 +49,8 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var
 .me-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 14px 4px 4px;cursor:pointer;font-size:.875rem}
 [dir="rtl"] .me-btn{padding:4px 4px 4px 14px}
 .me-btn:hover{border-color:var(--green)}
-.logo-img{margin:0;line-height:0;color:var(--ink)}.logo-img a{display:block;color:inherit}.logo-img svg{height:78px;width:auto;display:block}
+.logo-img{margin:0;line-height:0;color:var(--ink)}
+.logo-img svg [fill="currentColor"]{stroke:currentColor;stroke-width:2.2;paint-order:stroke}.logo-img a{display:block;color:inherit}.logo-img svg{height:78px;width:auto;display:block}
 @media (max-width:600px){.logo-img svg{height:60px}}
 .home-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:18px 28px;flex-wrap:wrap}
 .home-hero h2{font-size:2.3rem}
@@ -569,7 +570,7 @@ details.more>summary{color:var(--green)}
 .more-row svg{width:22px;height:22px;color:var(--green)}
 @media (max-width:700px){
   header{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:var(--bg)!important}
-  .logo-img svg{height:40px!important}
+  .logo-img svg{height:50px!important}
   .me-btn>span:not(.av){display:none}
   .bar{padding-block:6px!important}
   #tabsWrap{background:color-mix(in srgb,var(--surface) 80%,transparent);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:.5px solid var(--line)}
@@ -682,7 +683,9 @@ h1,h2,h3,.large-title,b,strong{letter-spacing:0}
 .gp-back{margin-bottom:-4px}
 #v-group .gpane .chat.sm{max-height:none}
 .chat-icon.logo-ic{background:#fff;border:1px solid var(--line);overflow:hidden;padding:0}
-.chat-icon.logo-ic img{width:100%;height:100%;object-fit:cover;transform:scale(1.12)}
+.chat-icon.logo-ic{width:46px;height:46px;color:#111}
+.chat-icon.logo-ic svg{width:44px;height:auto;display:block}
+.chat-icon.logo-ic svg [fill="currentColor"]{stroke:currentColor;stroke-width:3;paint-order:stroke}
 html{-webkit-text-size-adjust:100%;touch-action:manipulation}
 @media(max-width:700px){input,select,textarea{font-size:16px!important}}
 :root{--cat-tue:#2f6b52;--cat-sun:#c0507a;--cat-mach:#7fae94;--cat-mif:#e6a1bb}
@@ -950,6 +953,7 @@ body.mx-cart #v-machsan{padding-bottom:80px}
 <div id="splash" aria-hidden="true"></div>
 <script>(function(){var sp=document.getElementById('splash'),lg=document.querySelector('#logo svg');if(!sp)return;
 if(lg){var c=lg.cloneNode(true);c.removeAttribute('id');sp.appendChild(c)}
+var putAnn=function(){var ai=document.getElementById('annIcon');if(ai&&lg&&!ai.firstChild){var c2=lg.cloneNode(true);c2.removeAttribute('id');c2.removeAttribute('role');ai.appendChild(c2)}};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',putAnn);else setTimeout(putAnn,0);
 setTimeout(function(){sp.classList.add('out');setTimeout(function(){sp.remove()},700)},1800);})();</script>
 <div class="banner demo" id="demoBanner" hidden><div class="wrap"><div style="display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap"><span data-t="demoBanner" style="flex:1;min-width:200px"></span><label for="viewAs" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><span data-t="viewAs"></span><select id="viewAs" style="width:auto;padding:6px 12px;border-radius:999px;background:var(--surface)"></select></label></div></div></div>
 <div class="banner" id="loadBanner" hidden><div class="wrap"><div id="loadText"></div></div></div>
@@ -1170,7 +1174,7 @@ setTimeout(function(){sp.classList.add('out');setTimeout(function(){sp.remove()}
 <section class="view" id="v-messages" hidden>
   <p class="page-help" data-t="help_messages"></p>
   <div class="chat">
-    <div class="chat-head"><span class="chat-icon logo-ic" aria-hidden="true"><img alt="" src="data:image/jpeg;base64,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"></span><div class="grow"><h2 data-t="chatTitle"></h2><span class="muted small" id="chatSub"></span></div></div>
+    <div class="chat-head"><span class="chat-icon logo-ic" aria-hidden="true" id="annIcon"></span><div class="grow"><h2 data-t="chatTitle"></h2><span class="muted small" id="chatSub"></span></div></div>
     <div class="chat-body" id="msgList" aria-live="polite"></div>
     <form class="chat-compose" id="msgForm">
       <details class="chat-aud"><summary class="small"><span data-t="whoSees"></span>: <b id="audSum"></b></summary><div class="perm-chips" id="msgAud" role="group"></div></details>
