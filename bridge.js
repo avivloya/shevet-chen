@@ -296,11 +296,10 @@
     }
     document.getElementById('fidGo').onclick = go;
     document.getElementById('fidOther').onclick = function () { fidSet(null); auth.signOut().then(function () { location.reload(); }); };
-    // iOS shows its own blue "Continue" sheet if Face ID starts without a tap, so wait for
-    // one tap (anywhere on the screen) and go straight to the face scan.
-    var ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    // Ask for Face ID right away (the iPhone shows its own passkey sheet; a web app can't skip it).
+    // If the phone wants a tap first, a tap anywhere on this screen tries again.
     box.addEventListener('click', function (ev) { if (ev.target.closest('#fidOther') || ev.target.closest('#fidGo')) return; go(); });
-    if (!ios) setTimeout(go, 900);
+    setTimeout(go, 250);
   });
 
   signedIn.then(function (u) {
