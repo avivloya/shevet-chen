@@ -681,6 +681,11 @@ h1,h2,h3,.large-title,b,strong{letter-spacing:0}
 
 /* v37 swipe attendance */
 .att-top .grow{flex:1;min-width:0}
+#splash{position:fixed;inset:0;z-index:200;background:#faf7f2;display:flex;align-items:center;justify-content:center;transition:opacity .6s ease}
+#splash svg{width:min(62vw,300px);height:auto;animation:splashIn .9s ease both}
+#splash.out{opacity:0;pointer-events:none}
+@keyframes splashIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#splash svg{animation:none}}
 #v-group .gpane{display:none}
 #v-group[data-gp=todo] .gpane[data-gp=todo],#v-group[data-gp=peulot] .gpane[data-gp=peulot],#v-group[data-gp=cal] .gpane[data-gp=cal],#v-group[data-gp=chat] .gpane[data-gp=chat],#v-group[data-gp=att] .gpane[data-gp=att],#v-group[data-gp=kiosk] .gpane[data-gp=kiosk],#v-group[data-gp=team] .gpane[data-gp=team]{display:grid}
 #v-group:not([data-gp=""]) #gTiles,#v-group[data-gp=""] .gp-back{display:none}
@@ -962,6 +967,10 @@ body.mx-cart #v-machsan{padding-bottom:80px}
     <nav class="tabs" aria-label="Sections" id="tabs"></nav>
   </div>
 </header>
+<div id="splash" aria-hidden="true"></div>
+<script>(function(){var sp=document.getElementById('splash'),lg=document.querySelector('#logo svg');if(!sp)return;
+if(lg){var c=lg.cloneNode(true);c.removeAttribute('id');sp.appendChild(c)}
+setTimeout(function(){sp.classList.add('out');setTimeout(function(){sp.remove()},700)},1800);})();</script>
 <div class="banner demo" id="demoBanner" hidden><div class="wrap"><div style="display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap"><span data-t="demoBanner" style="flex:1;min-width:200px"></span><label for="viewAs" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><span data-t="viewAs"></span><select id="viewAs" style="width:auto;padding:6px 12px;border-radius:999px;background:var(--surface)"></select></label></div></div></div>
 <div class="banner" id="loadBanner" hidden><div class="wrap"><div id="loadText"></div></div></div>
 
