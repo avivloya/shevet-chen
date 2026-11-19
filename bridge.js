@@ -234,6 +234,101 @@
     }
   };
 
+  /* ---------- Face ID lock (a lock screen on this device, not a sign-in) ---------- */
+  var FID_KEY = 'shevet-faceid', FID_ASKED = 'shevet-faceid-asked';
+  var FT = HE ? {
+    ask: 'לפתוח את שבט חן עם Face ID?', askSub: 'בפעם הבאה שתפתחו את האפליקציה, הטלפון יבדוק שזה אתם.', on: 'להפעיל', later: 'לא עכשיו',
+    unlock: 'פתיחה עם Face ID', other: 'כניסה בדרך אחרת', failed: 'לא הצליח. נסו שוב.', setting: 'נעילה עם Face ID', isOn: 'פועל', isOff: 'כבוי', done: 'Face ID הופעל.'
+  } : {
+    ask: 'Use Face ID to open Shevet Chen?', askSub: 'Next time you open the app, your phone checks it’s you.', on: 'Turn on', later: 'Not now',
+    unlock: 'Unlock with Face ID', other: 'Sign in another way', failed: 'That didn’t work. Try again.', setting: 'Face ID lock', isOn: 'On', isOff: 'Off', done: 'Face ID is on.'
+  };
+  function fidGet() { try { return JSON.parse(localStorage.getItem(FID_KEY) || 'null'); } catch (e) { return null; } }
+  function fidSet(v) { try { if (v) localStorage.setItem(FID_KEY, JSON.stringify(v)); else localStorage.removeItem(FID_KEY); } catch (e) {} }
+  function rnd(n) { var a = new Uint8Array(n); crypto.getRandomValues(a); return a; }
+  function b64(buf) { return btoa(String.fromCharCode.apply(null, new Uint8Array(buf))); }
+  function unb64(s) { return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); }
+  function fidAvailable() {
+    return window.PublicKeyCredential && PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable
+      ? PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().catch(function () { return false; }) : Promise.resolve(false);
+  }
+  function fidCreate(u) {
+    return navigator.credentials.create({ publicKey: {
+      rp: { name: 'Shevet Chen' },
+      user: { id: new TextEncoder().encode(u.uid).slice(0, 64), name: u.email || u.uid, displayName: u.displayName || u.email || 'Shevet Chen' },
+      challenge: rnd(32),
+      pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+      authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required', residentKey: 'discouraged' },
+      timeout: 60000, attestation: 'none'
+    } }).then(function (c) { fidSet({ uid: u.uid, id: b64(c.rawId) }); });
+  }
+  function fidCheck(f) {
+    return navigator.credentials.get({ publicKey: {
+      challenge: rnd(32), allowCredentials: [{ type: 'public-key', id: unb64(f.id) }], userVerification: 'required', timeout: 60000
+    } });
+  }
+  var fidCss = document.createElement('style');
+  fidCss.textContent =
+    '#fidLock{position:fixed;inset:0;z-index:9990;background:#faf7f2;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;transition:opacity .4s ease;font-family:inherit}' +
+    '#fidLock.out{opacity:0;pointer-events:none}#fidLock svg [fill="currentColor"]{stroke:currentColor;stroke-width:1.6;paint-order:stroke}#fidLock .lg svg{width:min(56vw,260px);height:auto}' +
+    '#fidLock button{font:inherit;cursor:pointer;border-radius:999px;padding:12px 22px;border:0;background:#2f6b52;color:#fff;font-weight:600;min-width:220px}' +
+    '#fidLock .alt{background:none;color:#6f8178;font-weight:400;padding:6px;min-width:0}#fidLock .msg{color:#b4436c;font-size:.9rem;min-height:1.2em}' +
+    '#fidAsk{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:9980;max-width:440px;margin:0 auto;background:#fff;border:1px solid #e9e1d6;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:16px 18px;color:#1e3a2f}' +
+    '#fidAsk b{display:block;font-size:1rem}#fidAsk p{margin:4px 0 12px;color:#6f8178;font-size:.88rem}#fidAsk .row{display:flex;gap:8px}' +
+    '#fidAsk button{font:inherit;cursor:pointer;border-radius:999px;padding:9px 18px;border:1px solid #e9e1d6;background:#fff;color:#1e3a2f}#fidAsk button.go{background:#2f6b52;border-color:#2f6b52;color:#fff}' +
+    '#fbFaceId{font:inherit;cursor:pointer;border-radius:999px;padding:6px 14px;border:1px solid #e9e1d6;background:#fff;color:#2f6b52;font-size:.85rem;margin-inline-end:8px}';
+  document.head.appendChild(fidCss);
+
+  // Lock at start if this device has Face ID turned on.
+  var fidLocked = !!fidGet() && !!window.PublicKeyCredential;
+  if (fidLocked) onReady(function () {
+    var f = fidGet(), box = document.createElement('div');
+    box.id = 'fidLock'; box.dir = HE ? 'rtl' : 'ltr';
+    var lg = document.querySelector('#logo svg');
+    box.innerHTML = '<div class="lg"></div><button type="button" id="fidGo">' + FT.unlock + '</button><div class="msg" id="fidMsg" role="alert"></div><button type="button" class="alt" id="fidOther">' + FT.other + '</button>';
+    if (lg) box.querySelector('.lg').appendChild(lg.cloneNode(true));
+    document.body.appendChild(box);
+    function open() { fidLocked = false; box.classList.add('out'); setTimeout(function () { box.remove(); }, 450); }
+    function go() {
+      document.getElementById('fidMsg').textContent = '';
+      fidCheck(f).then(open, function (e) { if (e && e.name !== 'NotAllowedError') console.warn('Face ID', e); document.getElementById('fidMsg').textContent = e && e.name === 'NotAllowedError' ? '' : FT.failed; });
+    }
+    document.getElementById('fidGo').onclick = go;
+    document.getElementById('fidOther').onclick = function () { fidSet(null); auth.signOut().then(function () { location.reload(); }); };
+    setTimeout(go, 900); // after the logo; if the phone wants a tap first, the button is there
+  });
+
+  signedIn.then(function (u) {
+    var f = fidGet();
+    if (f && f.uid !== u.uid) { fidSet(null); var lk = document.getElementById('fidLock'); if (lk) lk.remove(); }
+    fidAvailable().then(function (ok) {
+      if (!ok) return;
+      onReady(function () {
+        // Settings toggle, next to Sign out
+        setTimeout(function () {
+          var so = document.getElementById('fbSignOut'); if (!so || document.getElementById('fbFaceId')) return;
+          var t = document.createElement('button'); t.id = 'fbFaceId'; t.type = 'button';
+          var draw = function () { t.textContent = FT.setting + ': ' + (fidGet() ? FT.isOn : FT.isOff); };
+          draw();
+          t.onclick = function () { if (fidGet()) { fidSet(null); draw(); } else fidCreate(u).then(draw, function () {}); };
+          so.parentNode.insertBefore(t, so);
+        }, 500);
+        // One-time offer
+        var asked = false; try { asked = !!localStorage.getItem(FID_ASKED); } catch (e) {}
+        if (fidGet() || asked) return;
+        setTimeout(function () {
+          if (document.getElementById('fbGate')) return;
+          var a = document.createElement('div'); a.id = 'fidAsk'; a.dir = HE ? 'rtl' : 'ltr';
+          a.innerHTML = '<b>' + FT.ask + '</b><p>' + FT.askSub + '</p><div class="row"><button type="button" class="go" id="fidYes">' + FT.on + '</button><button type="button" id="fidNo">' + FT.later + '</button></div>';
+          document.body.appendChild(a);
+          var close = function () { try { localStorage.setItem(FID_ASKED, '1'); } catch (e) {} a.remove(); };
+          document.getElementById('fidNo').onclick = close;
+          document.getElementById('fidYes').onclick = function () { fidCreate(u).then(function () { close(); var d = document.getElementById('fbFaceId'); if (d) d.textContent = FT.setting + ': ' + FT.isOn; }, function () {}); };
+        }, 4000);
+      });
+    });
+  });
+
   /* Cheny: send the conversation to the helper, which keeps the AI key secret */
   function chenySample(input, opts) {
     opts = opts || {};
