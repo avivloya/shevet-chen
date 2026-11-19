@@ -5,7 +5,7 @@ head = '''<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#f6f1e8">
 <title>Shevet Chen</title>
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=1">
