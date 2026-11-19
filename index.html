@@ -15,18 +15,18 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Shevet Chen">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script>window.SHEVET_BUILD='20261119230039';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
+<script>window.SHEVET_BUILD='20261119230337';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=20261119230039"></script>
-<script src="bridge.js?v=20261119230039"></script>
+<script src="firebase-config.js?v=20261119230337"></script>
+<script src="bridge.js?v=20261119230337"></script>
 </head>
 <body>
 <title>Shevet Chen</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Varela+Round&family=Heebo:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Rubik:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: quiet off-white page, white header with a small green logo pill and text tabs, content in a 1040px column of white cards; pink & green only as small accents */
 :root{
@@ -684,8 +684,11 @@ body.on-messages #v-messages .chat-body{padding-inline:max(16px,calc((100vw - 86
 body.on-messages #v-messages .chat-head,body.on-messages #v-messages .chat-compose{padding-inline:max(16px,calc((100vw - 860px)/2))}
 #tabsWrap .tabs a.tab-set{margin-top:10px;position:relative}#tabsWrap .tabs a.tab-set::before{content:'';position:absolute;top:-6px;left:12px;right:12px;border-top:1px solid var(--line)}
 
-/* v34 font: Varela Round */
-:root,:root[data-theme="light"],:root[data-theme="dark"]{--display:"Varela Round","Heebo",-apple-system,system-ui,sans-serif;--body:"Varela Round","Heebo",-apple-system,system-ui,sans-serif}
+/* v48 font: Nunito (rounded, thick) with Rubik for Hebrew */
+:root,:root[data-theme="light"],:root[data-theme="dark"]{--display:"Nunito","Rubik",-apple-system,system-ui,sans-serif;--body:"Nunito","Rubik",-apple-system,system-ui,sans-serif}
+body{font-weight:500}
+h1,h2,.large-title{font-weight:800}
+h3,b,strong,.btn,button{font-weight:700}
 body,h1,h2,h3,button,input,select,textarea{font-family:var(--body)}
 h1,h2,h3,.large-title,b,strong{letter-spacing:0}
 

@@ -9,7 +9,7 @@
   /* ---------- small UI helpers for the sign-in screen ---------- */
   var css = document.createElement('style');
   css.textContent =
-    '#fbGate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:#f6f1e8;font-family:Heebo,system-ui,sans-serif;color:#1e3a2f}' +
+    '#fbGate{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;background:#f6f1e8;font-family:Nunito,Rubik,system-ui,sans-serif;font-weight:500;color:#1e3a2f}' +
     '#fbGate .box{background:#fff;border:1px solid #e9e1d6;border-radius:20px;padding:32px 28px;max-width:380px;width:100%;box-shadow:0 1px 2px rgba(30,58,47,.04),0 8px 24px rgba(30,58,47,.06);text-align:center}' +
     '#fbGate .logo{display:inline-block;background:#2f6b52;color:#fff;border-radius:999px;padding:7px 18px;font-family:"Frank Ruhl Libre",Georgia,serif;font-size:1.25rem;margin-bottom:6px}' +
     '#fbGate .sub{color:#6f8178;font-size:.85rem;margin-bottom:22px}' +
