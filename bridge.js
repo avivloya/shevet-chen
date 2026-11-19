@@ -235,6 +235,130 @@
     }
   };
 
+  /* ---------- Notifications (Web Push through the helper worker) ---------- */
+  var PT = HE ? {
+    ask: 'לקבל התראות?', askSub: 'נעדכן אתכם על הודעות חן, צ׳אט הקבוצה, אירועים, משימות ובקשות מהמחסן.', on: 'הפעלה', later: 'לא עכשיו',
+    title: 'התראות', state: 'מצב', isOn: 'פועלות', isOff: 'כבויות', blocked: 'כבויות בהגדרות האייפון', turnOn: 'הפעלה',
+    needHome: 'כדי לקבל התראות, פתחו את האפליקציה מהאייקון במסך הבית.',
+    announce: 'הודעות חן', chat: 'צ׳אט הקבוצה', event: 'אירועים חדשים', task: 'משימות חדשות', machsan: 'בקשות מהמחסן'
+  } : {
+    ask: 'Turn on notifications?', askSub: 'Get a heads-up for Chen Announcements, your group chat, new events, to-dos and machsan requests.', on: 'Turn on', later: 'Not now',
+    title: 'Notifications', state: 'Status', isOn: 'On', isOff: 'Off', blocked: 'Off in iPhone Settings', turnOn: 'Turn on',
+    needHome: 'To get notifications, open the app from its home-screen icon.',
+    announce: 'Chen Announcements', chat: 'Group chat', event: 'New events', task: 'New to-dos', machsan: 'Machsan requests'
+  };
+  var P_TYPES = ['announce', 'chat', 'event', 'task', 'machsan'], P_PREFS = 'shevet-push-prefs', P_LATER = 'shevet-push-later';
+  function pushBase() { return window.CHENY_URL ? String(window.CHENY_URL).replace(/\/+$/, '') : ''; }
+  function pushOk() { return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window; }
+  function pushPerm() { return pushOk() ? Notification.permission : 'unsupported'; }
+  function pushPrefs() { try { return JSON.parse(localStorage.getItem(P_PREFS) || '{}') || {}; } catch (e) { return {}; } }
+  function pushCall(path, body) {
+    var u = auth.currentUser; if (!u || !pushBase()) return Promise.reject(new Error('off'));
+    return u.getIdToken().then(function (tok) {
+      return fetch(pushBase() + path, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: JSON.stringify(body || {}) });
+    }).then(function (r) { return r.json(); });
+  }
+  var swReg = null;
+  function swReady() {
+    if (swReg) return Promise.resolve(swReg);
+    return navigator.serviceWorker.register('sw.js', { scope: './' }).then(function (r) { swReg = r; return navigator.serviceWorker.ready; });
+  }
+  function pushSync() {
+    if (!pushBase()) return Promise.resolve(null);
+    var perm = pushPerm(), body = { perm: perm, prefs: pushPrefs(), lang: HE ? 'he' : 'en' };
+    if (perm !== 'granted') return pushCall('/push/subscribe', body).catch(function () {});
+    return swReady().then(function (reg) {
+      return reg.pushManager.getSubscription().then(function (s) {
+        if (s) return s;
+        return fetch(pushBase() + '/push/key').then(function (r) { return r.json(); }).then(function (k) {
+          return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: unb64u(k.key) });
+        });
+      });
+    }).then(function (s) { body.sub = s.toJSON(); return pushCall('/push/subscribe', body); })
+      .catch(function (e) { console.warn('Notifications', e); });
+  }
+  function unb64u(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); }
+  function pushAsk() { return Notification.requestPermission().then(function () { return pushSync(); }); }
+
+  // Tell the helper when something new is posted, so it can notify the right people.
+  var notifyBatches = {};
+  function hookNotify(colName, ref) {
+    var add = ref.add;
+    ref.add = function (data) {
+      return add.apply(ref, arguments).then(function (doc) {
+        try {
+          var b = data && data.batchId;
+          if (colName === 'machsanReq' && b) { if (notifyBatches[b]) return doc; notifyBatches[b] = 1; }
+          if (pushBase()) pushCall('/push/notify', { path: colName + '/' + doc.id }).catch(function () {});
+        } catch (e) {}
+        return doc;
+      });
+    };
+    return ref;
+  }
+  var baseCollection = db.collection;
+  db.collection = function (p) {
+    var w = baseCollection(p);
+    return ['broadcasts', 'events', 'tasks', 'machsanReq'].indexOf(p) >= 0 ? hookNotify(p, w) : w;
+  };
+
+  var pushCss = document.createElement('style');
+  pushCss.textContent =
+    '#pushAsk{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:9980;max-width:440px;margin:0 auto;background:#fff;border-radius:22px;box-shadow:0 12px 34px rgba(0,0,0,.16);padding:16px 18px;color:#1e3a2f}' +
+    '#pushAsk b{display:block;font-size:1.02rem}#pushAsk p{margin:4px 0 12px;color:#6f8178;font-size:.9rem;line-height:1.45}#pushAsk .row{display:flex;gap:8px}' +
+    '#pushAsk button{font:inherit;cursor:pointer;border-radius:999px;padding:9px 18px;border:1px solid #e9e1d6;background:#fff;color:#1e3a2f;font-weight:600}#pushAsk button.go{background:#2f6b52;border-color:#2f6b52;color:#fff}' +
+    '#setPush .set-row{cursor:default}#setPush .set-row.tap{cursor:pointer}#setPush .sw{margin-inline-start:auto;position:relative;width:46px;height:28px;flex:none}' +
+    '#setPush .sw input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}#setPush .sw i{position:absolute;inset:0;border-radius:999px;background:#d9dcd8;transition:background .2s}' +
+    '#setPush .sw i:after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}' +
+    '#setPush .sw input:checked+i{background:#2f6b52}#setPush .sw input:checked+i:after{transform:translateX(18px)}[dir=rtl] #setPush .sw input:checked+i:after{transform:translateX(-18px)}' +
+    '#setPushHead{font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6f8178;margin:18px 4px 8px}#setPush .pv{margin-inline-start:auto;color:#6f8178}';
+  document.head.appendChild(pushCss);
+
+  function drawPushSettings() {
+    var acct = document.getElementById('setAcct'); if (!acct || !pushBase()) return;
+    var box = document.getElementById('setPush');
+    if (!box) {
+      var h = document.createElement('div'); h.id = 'setPushHead'; h.textContent = PT.title;
+      box = document.createElement('div'); box.id = 'setPush'; box.className = 'set-list';
+      acct.parentNode.insertBefore(h, acct.nextSibling); h.parentNode.insertBefore(box, h.nextSibling);
+    }
+    var perm = pushPerm(), pf = pushPrefs();
+    var st = perm === 'granted' ? PT.isOn : perm === 'denied' ? PT.blocked : perm === 'unsupported' ? PT.needHome : PT.isOff;
+    box.innerHTML = '<div class="set-row' + (perm === 'default' ? ' tap' : '') + '" id="pushState"><span>' + PT.state + '</span><span class="pv">' + st + '</span>' +
+      (perm === 'default' ? '<button type="button" class="btn sm primary" id="pushOn" style="margin-inline-start:10px">' + PT.turnOn + '</button>' : '') + '</div>' +
+      (perm === 'granted' ? P_TYPES.map(function (k) {
+        return '<label class="set-row"><span>' + PT[k] + '</span><span class="sw"><input type="checkbox" data-ptype="' + k + '"' + (pf[k] === false ? '' : ' checked') + '><i></i></span></label>';
+      }).join('') : '');
+    var on = document.getElementById('pushOn'); if (on) on.onclick = function () { pushAsk().then(drawPushSettings); };
+    box.querySelectorAll('[data-ptype]').forEach(function (c) {
+      c.onchange = function () { var p = pushPrefs(); p[c.dataset.ptype] = c.checked; try { localStorage.setItem(P_PREFS, JSON.stringify(p)); } catch (e) {} pushSync(); };
+    });
+  }
+
+  // Merakzim: who has notifications off (the app shows this on the People page)
+  window.shevetPushStatus = function () { return pushCall('/push/status', {}); };
+
+  signedIn.then(function () {
+    if (!pushBase()) return;
+    onReady(function () {
+      pushSync();
+      setInterval(function () { if (document.getElementById('setAcct') && !document.getElementById('setPush')) drawPushSettings(); }, 800);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) { pushSync(); var b = document.getElementById('setPush'); if (b) drawPushSettings(); } });
+      // One-time friendly ask (only in the home-screen app, where iPhones allow notifications)
+      if (pushPerm() !== 'default') return;
+      var later = 0; try { later = +localStorage.getItem(P_LATER) || 0; } catch (e) {}
+      if (Date.now() - later < 3 * 864e5) return;
+      setTimeout(function () {
+        if (document.getElementById('fbGate') || document.getElementById('fidLock') || document.getElementById('fidAsk') || document.getElementById('tourCard') || document.getElementById('pushAsk')) return;
+        var a = document.createElement('div'); a.id = 'pushAsk'; a.dir = HE ? 'rtl' : 'ltr';
+        a.innerHTML = '<b>' + PT.ask + '</b><p>' + PT.askSub + '</p><div class="row"><button type="button" class="go" id="pushYes">' + PT.on + '</button><button type="button" id="pushNo">' + PT.later + '</button></div>';
+        document.body.appendChild(a);
+        document.getElementById('pushNo').onclick = function () { try { localStorage.setItem(P_LATER, String(Date.now())); } catch (e) {} a.remove(); };
+        document.getElementById('pushYes').onclick = function () { a.remove(); pushAsk(); };
+      }, 9000);
+    });
+  });
+
   /* ---------- Face ID lock (a lock screen on this device, not a sign-in) ---------- */
   var FID_KEY = 'shevet-faceid', FID_ASKED = 'shevet-faceid-asked';
   var FT = HE ? {
