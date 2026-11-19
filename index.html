@@ -15,12 +15,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Shevet Chen">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script>window.SHEVET_BUILD='20261119225011';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
+<script>window.SHEVET_BUILD='20261119225559';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=20261119225011"></script>
-<script src="bridge.js?v=20261119225011"></script>
+<script src="firebase-config.js?v=20261119225559"></script>
+<script src="bridge.js?v=20261119225559"></script>
 </head>
 <body>
 <title>Shevet Chen</title>
@@ -150,6 +150,13 @@ button.need-st{cursor:pointer}
 
 main{padding-block:32px 72px}
 .view{display:grid;gap:36px}
+.view:not([hidden]){animation:viewIn .38s ease both}
+@keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+html:not(.app-in) #loadBanner{visibility:hidden}
+@media (prefers-reduced-motion:reduce){.view:not([hidden]){animation:none}}
+.inspo{margin-top:10px;max-width:560px;padding:14px 16px;border-radius:16px;background:var(--surface);border:1px solid var(--line);border-inline-start:3px solid var(--rose);color:var(--ink);font-size:1rem;line-height:1.5;animation:inspoIn .7s .25s ease both}
+@keyframes inspoIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.inspo{animation:none}}
 .cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);gap:32px;align-items:start}
 @media (max-width:820px){.cols{grid-template-columns:minmax(0,1fr)}}
 .stack{display:grid;gap:14px;min-width:0}
@@ -996,7 +1003,8 @@ body.mx-cart #v-machsan{padding-bottom:80px}
 <script>(function(){var sp=document.getElementById('splash'),lg=document.querySelector('#logo svg');if(!sp)return;
 if(lg){var c=lg.cloneNode(true);c.removeAttribute('id');sp.appendChild(c)}
 var putAnn=function(){var ai=document.getElementById('annIcon');if(ai&&lg&&!ai.firstChild){var c2=lg.cloneNode(true);c2.removeAttribute('id');c2.removeAttribute('role');ai.appendChild(c2)}};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',putAnn);else setTimeout(putAnn,0);
-setTimeout(function(){sp.classList.add('out');setTimeout(function(){sp.remove()},700)},1800);})();</script>
+var t0=Date.now(),gone=false;function bye(){if(gone)return;gone=true;document.documentElement.classList.add('app-in');sp.classList.add('out');setTimeout(function(){sp.remove()},700)}
+(function wait(){var el=Date.now()-t0;if(el>=5000||(el>=1400&&(window.__shevetReady||document.getElementById('fbGate')||document.getElementById('fidLock'))))return bye();setTimeout(wait,120)})();})();</script>
 <div class="banner demo" id="demoBanner" hidden><div class="wrap"><div style="display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap"><span data-t="demoBanner" style="flex:1;min-width:200px"></span><label for="viewAs" style="display:flex;gap:8px;align-items:center;color:var(--ink)"><span data-t="viewAs"></span><select id="viewAs" style="width:auto;padding:6px 12px;border-radius:999px;background:var(--surface)"></select></label></div></div></div>
 <div class="banner" id="loadBanner" hidden><div class="wrap"><div id="loadText"></div></div></div>
 
@@ -1045,7 +1053,7 @@ setTimeout(function(){sp.classList.add('out');setTimeout(function(){sp.remove()}
 <!-- HOME -->
 <section class="view" id="v-home" hidden>
   <div class="home-hero">
-    <div class="stack" style="gap:4px"><span class="label" id="homeDate"></span><h2 id="homeHello"></h2></div>
+    <div class="stack" style="gap:4px;flex:1;min-width:0"><span class="label" id="homeDate"></span><h2 id="homeHello"></h2><p class="inspo" id="homeInspo" hidden></p></div>
   </div>
   <h2 class="grp-h" id="grpH" data-t="yourGroups"></h2><div class="group-btns" id="groupBtns"></div>
   <div class="cols">
@@ -1824,10 +1832,17 @@ function allGroups(){var seen={},out=[];var add=function(role,unit){if(!ROLE[rol
 function groupBtn(g,mine){return '<button type="button" class="group-btn'+(mine?' mine':'')+'" data-group="'+esc(g.role+'|'+g.unit)+'"><span>'+esc(gLabel(g))+(mine&&gkOf(g.role,g.unit)!=='merakzim'&&gLabel(g)!==ROLE[g.role][lang]?'<small>'+esc(ROLE[g.role][lang])+'</small>':'')+'</span><span class="arrow" aria-hidden="true">→</span></button>'}
 function evCard(e){var dt=parseD(e.date),mo=MON[lang][dt.getMonth()],c=evCat(e);
   return '<div class="item ev-c '+c+'"><span class="date-badge"><b>'+dt.getDate()+'</b><span>'+(lang==='he'?mo:mo.slice(0,3))+'</span></span><div class="grow"><b>'+esc(e.title)+'</b> <span class="tag">'+esc(aname(e))+'</span><div class="muted small">'+DOWS[lang][dt.getDay()]+(e.time?' · '+tm(e):'')+(e.place?' · '+esc(e.place):'')+'</div>'+(e.notes?'<div class="small">'+esc(e.notes)+'</div>':'')+'</div></div>'}
+var INSPO={en:["{n}, chanichim forget the details but remember how you made them feel. Make it a good week.", "Every great peula starts with one small idea, {n}.", "{n}, someone is counting down to Sunday because of you.", "Small things done with heart are what make a shevet, {n}.", "Thanks for showing up, {n}. It matters more than you know.", "{n}, a good team makes a hard week easy. This team is a good one.", "Be prepared, {n}. And then be kind.", "{n}, today is a good day to make someone feel seen.", "Chen grows because people like you keep watering it, {n}.", "{n}, good leading starts with good listening."],he:["{n}, חניכים שוכחים את הפרטים וזוכרים את ההרגשה. שיהיה שבוע טוב.", "כל פעולה גדולה מתחילה ברעיון קטן, {n}.", "{n}, בזכותך מישהו סופר את הימים עד יום ראשון.", "דברים קטנים שנעשים מהלב הם מה שבונה שבט, {n}.", "תודה שאת.ה כאן, {n}. זה משנה יותר ממה שנדמה.", "{n}, צוות טוב הופך שבוע קשה לקל. והצוות הזה טוב.", "{n}, תמיד נכונים. ותמיד עם לב.", "{n}, היום הוא יום טוב לגרום למישהו להרגיש שרואים אותו.", "חן גדל בזכות אנשים כמוך, {n}.", "{n}, הדרכה טובה מתחילה בהקשבה."]};
+var inspoIx=(function(){var n=INSPO.en.length,last=-1;try{last=+localStorage.getItem('shevet-inspo');if(isNaN(last))last=-1}catch(e){}var i=Math.floor(Math.random()*(n-1));if(i>=last&&last>=0)i++;i=i%n;try{localStorage.setItem('shevet-inspo',String(i))}catch(e){}return i})();
+var meFirst='';
+function firstName(x){x=String(x||'').trim();if(!x||x.indexOf('@')>=0)return '';var w=x.split(/[\s._]+/)[0];return w?w.charAt(0).toUpperCase()+w.slice(1):''}
+function greetWord(){var h=new Date().getHours();return lang==='he'?(h<12&&h>=5?'בוקר טוב':h<17&&h>=12?'צהריים טובים':'ערב טוב'):(h<12&&h>=5?'Good morning':h<17&&h>=12?'Good afternoon':'Good evening')}
 function renderHome(){
   var d=D(),up=upcoming(),last=d.sessions.slice().sort(function(a,b){return a.date<b.date?1:-1})[0],lp=last?sessPct(last):null;
   var vm=vaMember(),nm=vm?vm.name:(meId&&prof(meId)&&prof(meId).username);
-  $('homeHello').textContent=nm?t('hello',{n:nm}):t('helloAnon');$('homeDate').textContent=niceDate(ymd(today));
+  var fn=vm?firstName(vm.name):(meFirst||firstName(meId&&names[meId])||firstName(nm));
+  $('homeHello').textContent=fn?greetWord()+', '+fn:t('helloAnon');
+  var iq=$('homeInspo'),it=(INSPO[lang]||INSPO.en)[inspoIx];iq.hidden=!fn;if(fn&&iq.textContent!==it.replace('{n}',fn))iq.textContent=it.replace('{n}',fn);$('homeDate').textContent=niceDate(ymd(today));
   var mg=myGroup(),mrkAll=full()||isMrk();
   var _gb=$('groupBtns');_gb.innerHTML=mrkAll?allGroups().filter(function(g){return g.role!=='rashatz'&&g.role!=='peil'}).map(function(g){return groupBtn(g,gkOf(g.role,g.unit)==='merakzim')}).join(''):mg?groupBtn(mg,true):'';
   var now=new Date(),due=d.events.filter(function(e){var r=remindAt(e);return r&&!e.reminderSent&&r<=now&&evStart(e)>now});
@@ -2449,8 +2464,8 @@ function start(){
   setLoad('loading');$('loadBanner').hidden=false;
   var settled=false,need=0,got={};
   var timer=setTimeout(function(){if(!settled){setLoad('slow')}},10000);
-  function mark(key,s){if(s&&s.metadata&&s.metadata.fromCache)return;got[key]=1;if(Object.keys(got).length>=need&&!settled){settled=true;ready=true;clearTimeout(timer);$('loadBanner').hidden=true;renderApp()}}
-  function err(){settled=true;ready=true;clearTimeout(timer);setLoad('loadFail');$('loadBanner').hidden=false;renderApp()}
+  function mark(key,s){if(s&&s.metadata&&s.metadata.fromCache)return;got[key]=1;if(Object.keys(got).length>=need&&!settled){settled=true;ready=true;window.__shevetReady=true;clearTimeout(timer);$('loadBanner').hidden=true;renderApp()}}
+  function err(){settled=true;ready=true;window.__shevetReady=true;clearTimeout(timer);setLoad('loadFail');$('loadBanner').hidden=false;renderApp()}
   function sub(key,q,fn){need++;q.onSnapshot(function(s){fn(s);mark(key,s);renderApp()},err)}
   sub('roster',db.collection('roster'),function(s){S.roster=list(s)});
   sub('events',db.collection('events'),function(s){S.events=list(s)});
@@ -2593,12 +2608,12 @@ if(window.claude&&window.claude.use){
     db=r[0];user=r[1];
     return (user?Promise.all([user.isOwner(),user.canEdit(),user.me()]):Promise.resolve([false,false,null])).then(function(x){
       isOwner=!!x[0];isAdmin=!!x[1]||isOwner;var me=x[2];meId=me&&me.id;
-      if(me&&me.id){names[me.id]=me.name||t('you')}
-      if(db)start();else{ready=true;setLoad('gateSignIn');$('loadBanner').hidden=false}
+      if(me&&me.id){names[me.id]=me.name||t('you');meFirst=firstName(me.first||'')}
+      if(db)start();else{ready=true;window.__shevetReady=true;setLoad('gateSignIn');$('loadBanner').hidden=false}
       renderApp();
     });
   });
-}else{ready=true;if(PREVIEW){db=memDb();meId='demo-aviv'}setLoad('outside');$('loadBanner').hidden=false;renderApp()}
+}else{ready=true;window.__shevetReady=true;if(PREVIEW){db=memDb();meId='demo-aviv'}setLoad('outside');$('loadBanner').hidden=false;renderApp()}
 })();
 </script>
 

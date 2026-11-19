@@ -221,7 +221,7 @@
   });
 
   var user = {
-    me: function () { return signedIn.then(function (u) { return { id: u.uid, name: displayName(u) }; }); },
+    me: function () { return signedIn.then(function (u) { return { id: u.uid, name: displayName(u), first: u.displayName || '' }; }); },
     isOwner: function () { return ownerP; },
     canEdit: function () { return ownerP; },
     profiles: function (ids) {
@@ -296,7 +296,11 @@
     }
     document.getElementById('fidGo').onclick = go;
     document.getElementById('fidOther').onclick = function () { fidSet(null); auth.signOut().then(function () { location.reload(); }); };
-    setTimeout(go, 900); // after the logo; if the phone wants a tap first, the button is there
+    // iOS shows its own blue "Continue" sheet if Face ID starts without a tap, so wait for
+    // one tap (anywhere on the screen) and go straight to the face scan.
+    var ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    box.addEventListener('click', function (ev) { if (ev.target.closest('#fidOther') || ev.target.closest('#fidGo')) return; go(); });
+    if (!ios) setTimeout(go, 900);
   });
 
   signedIn.then(function (u) {
