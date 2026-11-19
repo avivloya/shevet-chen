@@ -19,7 +19,7 @@
     '#fbGate .or{color:#6f8178;font-size:.8rem;margin:16px 0 4px}' +
     '#fbGate .err{color:#b4436c;font-size:.85rem;min-height:1.2em;margin-top:10px}' +
     '#fbGate .link{background:none;border:0;color:#b4436c;text-decoration:underline;width:auto;padding:4px;margin-top:6px;font-size:.85rem}' +
-    '#fbSignOut{font:inherit;cursor:pointer;border-radius:999px;padding:6px 14px;border:1px solid #e9e1d6;background:#fff;color:#b4436c;font-size:.85rem}' +
+    '#fbSignOut:not(.set-row){font:inherit;cursor:pointer;border-radius:999px;padding:6px 14px;border:1px solid #e9e1d6;background:#fff;color:#b4436c;font-size:.85rem}' +
     /* Cheny shows only once its helper address is set in firebase-config.js */
     (window.CHENY_URL ? '' : '#chenyBtn,#chenyPanel{display:none!important}');
   document.head.appendChild(css);
@@ -214,8 +214,9 @@
       var btn = document.createElement('button');
       btn.id = 'fbSignOut'; btn.type = 'button'; btn.textContent = T.signOut;
       btn.onclick = function () { auth.signOut(); };
-      var back = document.getElementById('settingsBack');
-      if (back && back.parentNode) back.parentNode.insertBefore(btn, back);
+      var acct = document.getElementById('setAcct'), back = document.getElementById('settingsBack');
+      if (acct) { btn.className = 'set-row warn'; acct.appendChild(btn); }
+      else if (back && back.parentNode) back.parentNode.insertBefore(btn, back);
     });
   });
 
@@ -276,7 +277,7 @@
     '#fidAsk{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:9980;max-width:440px;margin:0 auto;background:#fff;border:1px solid #e9e1d6;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:16px 18px;color:#1e3a2f}' +
     '#fidAsk b{display:block;font-size:1rem}#fidAsk p{margin:4px 0 12px;color:#6f8178;font-size:.88rem}#fidAsk .row{display:flex;gap:8px}' +
     '#fidAsk button{font:inherit;cursor:pointer;border-radius:999px;padding:9px 18px;border:1px solid #e9e1d6;background:#fff;color:#1e3a2f}#fidAsk button.go{background:#2f6b52;border-color:#2f6b52;color:#fff}' +
-    '#fbFaceId{font:inherit;cursor:pointer;border-radius:999px;padding:6px 14px;border:1px solid #e9e1d6;background:#fff;color:#2f6b52;font-size:.85rem;margin-inline-end:8px}';
+    '#fbFaceId:not(.set-row){font:inherit;cursor:pointer;border-radius:999px;padding:6px 14px;border:1px solid #e9e1d6;background:#fff;color:#2f6b52;font-size:.85rem;margin-inline-end:8px}';
   document.head.appendChild(fidCss);
 
   // Lock at start if this device has Face ID turned on.
@@ -307,7 +308,7 @@
         // Settings toggle, next to Sign out
         setTimeout(function () {
           var so = document.getElementById('fbSignOut'); if (!so || document.getElementById('fbFaceId')) return;
-          var t = document.createElement('button'); t.id = 'fbFaceId'; t.type = 'button';
+          var t = document.createElement('button'); t.id = 'fbFaceId'; t.type = 'button'; if (so.classList.contains('set-row')) t.className = 'set-row';
           var draw = function () { t.textContent = FT.setting + ': ' + (fidGet() ? FT.isOn : FT.isOff); };
           draw();
           t.onclick = function () { if (fidGet()) { fidSet(null); draw(); } else fidCreate(u).then(draw, function () {}); };
