@@ -15,12 +15,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Shevet Chen">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script>window.SHEVET_BUILD='20261119231917';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
+<script>window.SHEVET_BUILD='20261119232608';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=20261119231917"></script>
-<script src="bridge.js?v=20261119231917"></script>
+<script src="firebase-config.js?v=20261119232608"></script>
+<script src="bridge.js?v=20261119232608"></script>
 </head>
 <body>
 <title>Shevet Chen</title>
@@ -1924,7 +1924,7 @@ function groupLabel(role,unit){var r=ROLE[role];if(!r)return '';unit=String(unit
   return r[lang]}
 function myGroup(){var a=effApp();return (!full()&&a&&a.status==='approved'&&a.role)?{role:a.role,unit:a.unit||''}:null}
 function allGroups(){var seen={},out=[];var add=function(role,unit){if(!ROLE[role])return;var k=gkOf(role,unit);if(seen[k])return;seen[k]=1;out.push({role:role,unit:unit||''})};
-  add('mifalim','');PEILIM.forEach(function(x){add('rashatz',x.k)});
+  add('mifalim','');GRADES.en.slice(0,8).forEach(function(g){add('rashgad',g)});add('tet','');PEILIM.forEach(function(x){add('rashatz',x.k)});
   D().roster.forEach(function(m){add(m.role,m.unit)});D().approvals.forEach(function(a){if(a.status==='approved'&&a.portal==='shachbag')add(a.role,a.unit)});
   return out.sort(function(a,b){return ROLES.indexOf(ROLE[a.role])-ROLES.indexOf(ROLE[b.role])||norm(a.unit).localeCompare(norm(b.unit))})}
 function groupBtn(g,mine){return '<button type="button" class="group-btn'+(mine?' mine':'')+'" data-group="'+esc(g.role+'|'+g.unit)+'"><span>'+esc(gLabel(g))+(mine&&gkOf(g.role,g.unit)!=='merakzim'&&gLabel(g)!==ROLE[g.role][lang]?'<small>'+esc(ROLE[g.role][lang])+'</small>':'')+'</span><span class="arrow" aria-hidden="true">→</span></button>'}

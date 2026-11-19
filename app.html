@@ -1899,7 +1899,7 @@ function groupLabel(role,unit){var r=ROLE[role];if(!r)return '';unit=String(unit
   return r[lang]}
 function myGroup(){var a=effApp();return (!full()&&a&&a.status==='approved'&&a.role)?{role:a.role,unit:a.unit||''}:null}
 function allGroups(){var seen={},out=[];var add=function(role,unit){if(!ROLE[role])return;var k=gkOf(role,unit);if(seen[k])return;seen[k]=1;out.push({role:role,unit:unit||''})};
-  add('mifalim','');PEILIM.forEach(function(x){add('rashatz',x.k)});
+  add('mifalim','');GRADES.en.slice(0,8).forEach(function(g){add('rashgad',g)});add('tet','');PEILIM.forEach(function(x){add('rashatz',x.k)});
   D().roster.forEach(function(m){add(m.role,m.unit)});D().approvals.forEach(function(a){if(a.status==='approved'&&a.portal==='shachbag')add(a.role,a.unit)});
   return out.sort(function(a,b){return ROLES.indexOf(ROLE[a.role])-ROLES.indexOf(ROLE[b.role])||norm(a.unit).localeCompare(norm(b.unit))})}
 function groupBtn(g,mine){return '<button type="button" class="group-btn'+(mine?' mine':'')+'" data-group="'+esc(g.role+'|'+g.unit)+'"><span>'+esc(gLabel(g))+(mine&&gkOf(g.role,g.unit)!=='merakzim'&&gLabel(g)!==ROLE[g.role][lang]?'<small>'+esc(ROLE[g.role][lang])+'</small>':'')+'</span><span class="arrow" aria-hidden="true">→</span></button>'}
