@@ -15,12 +15,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Shevet Chen">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script>window.SHEVET_BUILD='20261119232608';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
+<script>window.SHEVET_BUILD='20261119234729';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=20261119232608"></script>
-<script src="bridge.js?v=20261119232608"></script>
+<script src="firebase-config.js?v=20261119234729"></script>
+<script src="bridge.js?v=20261119234729"></script>
 </head>
 <body>
 <title>Shevet Chen</title>
@@ -347,7 +347,10 @@ details.more>div{display:grid;gap:14px}
 .day.out{opacity:.35}
 .day.today{color:var(--rose);font-weight:500}
 .day[aria-pressed="true"]{background:var(--green);color:var(--on-accent)}
-.day .ds{display:flex;gap:2px;height:5px}
+.day .ds{display:none}
+.day .dn{position:relative;width:min(34px,86%);aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.day .dn[data-ring]::before{content:'';position:absolute;inset:0;border-radius:50%;background:var(--ring);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.5px));mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.5px))}
+.day[aria-pressed="true"] .dn[data-ring]::before{inset:-2px}
 .day .ds i{width:5px;height:5px;border-radius:50%;background:var(--green)}
 .day[aria-pressed="true"] .ds i{background:var(--on-accent)}
 .ev-time{font-variant-numeric:tabular-nums;min-width:5ch;color:var(--green);font-size:.9rem}
@@ -2245,6 +2248,9 @@ function gTilesDraw(){var v=$('v-group');v.dataset.gp=gPane;
   $('gTiles').innerHTML=tiles.map(function(x){return '<button type="button" class="gp-tile" data-gpane="'+x[0]+'"><span class="gp-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+GP_IC[x[0]]+'</svg></span><span><b>'+t(x[1])+'</b><small>'+x[2]+'</small></span></button>'}).join('');
   if((gPane==='att'&&!kidsOn)||(gPane==='kiosk'&&!kioskOn)){gPane='';v.dataset.gp=''}}
 document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.target.closest('[data-gpane]');if(!b)return;gPane=b.dataset.gpane;gTilesDraw();scrollTo(0,0);if(gPane==='chat'){var c=$('gChat');if(c)c.scrollTop=c.scrollHeight}});
+function dayRing(evs){if(!evs||!evs.length)return '';var cs=[];evs.forEach(function(e){var c=evCat(e)||'none';if(cs.indexOf(c)<0)cs.push(c)});
+  var col=function(c){return c==='none'?'var(--muted)':'var(--cat-'+c+')'},n=cs.length,g=cs.length===1?col(cs[0]):'conic-gradient('+cs.map(function(c,i){var a=i*100/n,b=(i+1)*100/n;return col(c)+' '+a+'% '+b+'%'}).join(',')+')';
+  return ' style="--ring:'+g+'" data-ring="1"'}
 function renderKiosk(g,gk,member){var box=$('kioskBox'),show=gk===gkOf('rashatz','Machsan Kiosk')&&(member||full()||isMrk());box.hidden=!show;if(!show)return;
   var rs=(D().mxReqs||[]).filter(function(r){return r.status!=='declined'&&r.status!=='returned'}),bs={},order=[];
   rs.forEach(function(r){var k=r.batchId||r.id;if(!bs[k]){bs[k]={k:k,items:[],r:r};order.push(k)}bs[k].items.push(r)});
@@ -2368,7 +2374,7 @@ function renderCalendar(){
   var st=new Date(calMonth);st.setDate(1-st.getDay());var by={};d.events.filter(catOk).forEach(function(e){(by[e.date]=by[e.date]||[]).push(e)});
   var h=DOWS[lang].map(function(x){return '<div class="dow">'+x+'</div>'}).join(''),td=ymd(today);
   for(var i=0;i<42;i++){var x=new Date(st);x.setDate(st.getDate()+i);var k=ymd(x),n=(by[k]||[]).length;
-    h+='<button type="button" class="day'+(x.getMonth()!==calMonth.getMonth()?' out':'')+(k===td?' today':'')+'" data-day="'+k+'" aria-pressed="'+(calPicked&&k===selDay)+'" aria-label="'+niceDate(k)+'"><span>'+x.getDate()+'</span><span class="ds">'+(by[k]||[]).slice(0,3).map(function(e){return '<i class="'+(evCat(e)||'none')+'"></i>'}).join('')+'</span></button>'}
+    h+='<button type="button" class="day'+(x.getMonth()!==calMonth.getMonth()?' out':'')+(k===td?' today':'')+'" data-day="'+k+'" aria-pressed="'+(calPicked&&k===selDay)+'" aria-label="'+niceDate(k)+'"><span class="dn"'+dayRing(by[k])+'>'+x.getDate()+'</span></button>'}
   $('calGrid').innerHTML=h;
   if(!calPicked){$('dayLabel').textContent=t('upcomingL');$('calBack').hidden=true;var up2=upcoming().filter(catOk).slice(0,8);
     $('dayEvents').innerHTML=up2.length?up2.map(evCard).join(''):'<div class="empty small">'+t('noUpcoming')+'</div>'}
