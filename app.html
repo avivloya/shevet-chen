@@ -1766,7 +1766,7 @@ function route(){
   $('gate').hidden=m!=='gate';$('parent').hidden=m!=='parent';$('settingsView').hidden=m!=='settings';
   document.body.classList.toggle('mx-cart',false);
   var navOn=m==='app'||m==='settings';$('tabsWrap').hidden=!navOn;$('menuBtn').hidden=!navOn;if(!navOn)menuOpen(false);
-  $('demoWrap').dataset.allowed=(isAdmin||!window.claude)?'1':'0';var srd=$('sr-demo');if(srd)srd.hidden=$('demoWrap').dataset.allowed!=='1';
+  $('demoWrap').dataset.allowed=window.SHEVET_PREVIEW?'1':'0';if(!window.SHEVET_PREVIEW&&demo){demo=false;SAMPLE=null;$('demoToggle').checked=false}var srd=$('sr-demo');if(srd)srd.hidden=$('demoWrap').dataset.allowed!=='1';
   $('parentBack').hidden=!preview;
   var vt=visibleTabs();
   var v=(location.hash||'#home').slice(1);
