@@ -562,6 +562,8 @@ table.matrix.att{min-width:0;width:auto}
 .gate form{text-align:start}
 .set-cap{font-size:.78rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);padding:12px 16px 4px}
 #setSpots .set-row{display:flex;align-items:center;gap:12px}
+#setSpots .geo-ic{flex:none}#setSpots .chev{flex:none;margin-inline-start:auto}
+.spot-txt{flex:1 1 auto;min-width:0;display:grid;gap:2px;text-align:start}.spot-txt b{font-weight:600;white-space:nowrap}.spot-txt span{font-size:.85rem;color:var(--muted);line-height:1.35;overflow-wrap:anywhere}
 .ci-old.idle{background:#fff;color:#9aa49e;box-shadow:0 0 0 1px var(--line),0 6px 18px rgba(30,58,47,.12);animation:none}
 .ci-old.idle .ci-lab{color:#9aa49e}
 .ci-juice{position:fixed;inset:0;z-index:95;background:rgba(247,245,240,.0);display:grid;place-items:center;transition:background .25s;pointer-events:auto}
@@ -1961,7 +1963,7 @@ function ciApply(list){if(!(full()||isMrk()||isOwner)||!db)return;(list||[]).for
 /* check-in spot picker (merakzim) */
 var geoTarget=null,geoVal=null,geoMap=null,geoPin=null,geoCirc=null;
 function renderSpots(){var el=$('setSpots');if(!el)return;var on=can('editEvents')&&mode()!=='gate';el.hidden=!on;if(!on)return;
-  el.innerHTML='<div class="set-cap">'+t('ciSpotsH')+'</div>'+SPOT_CATS.map(function(c){var g=mainSpot();return '<button type="button" class="set-row" data-geocat="'+c+'"><span class="geo-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg></span><span class="grow">'+t('ciSpotAll')+'</span><span class="set-val">'+(g?esc((g.name?g.name+' · ':'')+(g.r||150)+' m'):t('ciSpotOff'))+'</span><svg class="chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>'}).join('')}
+  el.innerHTML='<div class="set-cap">'+t('ciSpotsH')+'</div>'+SPOT_CATS.map(function(c){var g=mainSpot();return '<button type="button" class="set-row" data-geocat="'+c+'"><span class="geo-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg></span><span class="spot-txt"><b>'+t('ciSpotAll')+'</b><span>'+(g?esc((g.name?g.name+' · ':'')+(g.r||150)+' m'):t('ciSpotOff'))+'</span></span><svg class="chev" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg></button>'}).join('')}
 function geoLabel(g){return g&&g.lat?(g.name?g.name+' · ':'')+t('ciSpotSet',{r:g.r||150}):t('ciSpotNone')}
 function geoOpen(target,cur){geoTarget=target;geoVal=cur&&cur.lat?{lat:cur.lat,lng:cur.lng,r:cur.r||150,name:cur.name||''}:null;
   var sh=$('geoSheet');if(!sh){sh=document.createElement('div');sh.id='geoSheet';sh.className='edit-sheet';document.body.appendChild(sh);sh.addEventListener('click',function(ev){if(ev.target===sh)geoClose()})}
