@@ -405,8 +405,11 @@
   }
   var fidCss = document.createElement('style');
   fidCss.textContent =
-    '#fidLock{position:fixed;inset:0;z-index:9990;background:#faf7f2;color:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;transition:opacity .4s ease;font-family:inherit}' +
-    '#fidLock.out{opacity:0;pointer-events:none}#fidLock svg [fill="currentColor"]{stroke:currentColor;stroke-width:1.6;paint-order:stroke}#fidLock .lg svg{width:min(56vw,260px);height:auto}' +
+    '#fidLock{position:fixed;inset:0;z-index:9990;background:#faf7f2;color:#111;display:flex;align-items:center;justify-content:center;transition:opacity .35s ease;font-family:inherit;-webkit-user-select:none;user-select:none}' +
+    '#fidLock.out{opacity:0;pointer-events:none}#fidLock svg [fill="currentColor"]{stroke:currentColor;stroke-width:1.6;paint-order:stroke}' +
+    '#fidLock .lg svg{width:min(62vw,300px);height:auto;display:block;transition:transform .35s cubic-bezier(.3,1.4,.6,1)}#fidLock.ok .lg svg{transform:scale(1.06)}' +
+    '#fidLock .acts{position:absolute;left:0;right:0;bottom:calc(40px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:10px;opacity:0;transform:translateY(8px);transition:opacity .3s ease,transform .3s ease;pointer-events:none}' +
+    '#fidLock.need .acts{opacity:1;transform:none;pointer-events:auto}' +
     '#fidLock button{font:inherit;cursor:pointer;border-radius:999px;padding:12px 22px;border:0;background:#2f6b52;color:#fff;font-weight:600;min-width:220px}' +
     '#fidLock .alt{background:none;color:#6f8178;font-weight:400;padding:6px;min-width:0}#fidLock .msg{color:#b4436c;font-size:.9rem;min-height:1.2em}' +
     '#fidAsk{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:9980;max-width:440px;margin:0 auto;background:#fff;border:1px solid #e9e1d6;border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.14);padding:16px 18px;color:#1e3a2f}' +
@@ -423,20 +426,35 @@
     var f = fidGet(), box = document.createElement('div');
     box.id = 'fidLock'; box.dir = HE ? 'rtl' : 'ltr';
     var lg = document.querySelector('#logo svg');
-    box.innerHTML = '<div class="lg"></div><button type="button" id="fidGo">' + FT.unlock + '</button><div class="msg" id="fidMsg" role="alert"></div><button type="button" class="alt" id="fidOther">' + FT.other + '</button>';
+    box.innerHTML = '<div class="lg"></div><div class="acts"><div class="msg" id="fidMsg" role="alert"></div><button type="button" id="fidGo">' + FT.unlock + '</button><button type="button" class="alt" id="fidOther">' + FT.other + '</button></div>';
     if (lg) box.querySelector('.lg').appendChild(lg.cloneNode(true));
     document.body.appendChild(box);
-    function open() { fidLocked = false; try { sessionStorage.setItem('shevet-fid-ok', '1'); } catch (e) {} box.classList.add('out'); setTimeout(function () { box.remove(); }, 450); }
+    var busy = false, needT = 0;
+    function open() {
+      fidLocked = false; clearTimeout(needT); try { sessionStorage.setItem('shevet-fid-ok', '1'); } catch (e) {}
+      var sp = document.getElementById('splash'); if (sp) sp.remove();
+      document.documentElement.classList.add('app-in');
+      box.classList.remove('need'); box.classList.add('ok');
+      setTimeout(function () { box.classList.add('out'); }, 160);
+      setTimeout(function () { box.remove(); }, 560);
+    }
     function go() {
+      if (busy) return; busy = true;
       document.getElementById('fidMsg').textContent = '';
-      fidCheck(f).then(open, function (e) { if (e && e.name !== 'NotAllowedError') console.warn('Face ID', e); document.getElementById('fidMsg').textContent = e && e.name === 'NotAllowedError' ? '' : FT.failed; });
+      clearTimeout(needT); needT = setTimeout(function () { box.classList.add('need'); }, 2500);
+      fidCheck(f).then(function () { busy = false; open(); }, function (e) {
+        busy = false; clearTimeout(needT);
+        if (e && e.name !== 'NotAllowedError') console.warn('Face ID', e);
+        document.getElementById('fidMsg').textContent = e && e.name === 'NotAllowedError' ? '' : FT.failed;
+        box.classList.add('need');
+      });
     }
     document.getElementById('fidGo').onclick = go;
     document.getElementById('fidOther').onclick = function () { fidSet(null); auth.signOut().then(function () { location.reload(); }); };
     // Ask for Face ID right away (the iPhone shows its own passkey sheet; a web app can't skip it).
     // If the phone wants a tap first, a tap anywhere on this screen tries again.
     box.addEventListener('click', function (ev) { if (ev.target.closest('#fidOther') || ev.target.closest('#fidGo')) return; go(); });
-    setTimeout(go, 250);
+    setTimeout(go, 30);
   });
 
   signedIn.then(function (u) {
