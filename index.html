@@ -15,12 +15,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Shevet Chen">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script>window.SHEVET_BUILD='20261120065609';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
+<script>window.SHEVET_BUILD='20261120065720';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=20261120065609"></script>
-<script src="bridge.js?v=20261120065609"></script>
+<script src="firebase-config.js?v=20261120065720"></script>
+<script src="bridge.js?v=20261120065720"></script>
 </head>
 <body>
 <title>Shevet Chen</title>
@@ -2281,7 +2281,7 @@ function wgAvail(){var mrk=full()||isMrk(),g=myGroup(),a=['portal','upcoming','a
 function wgKey(){return 'shevet-home-'+(viewAs||meId||'me')}
 function wgList(){var av=wgAvail(),l=null;try{l=JSON.parse(localStorage.getItem(wgKey())||'null')}catch(e){}
   if(!Array.isArray(l)){var ea0=effApp(),r0=ea0&&ea0.role;l=(full()||isMrk())?['portal','today','countdown','upcoming','reminders','peulot','announce','bdays']:(r0==='rashgad'||r0==='rashatz'||r0==='tet')?['portal','today','countdown','todo','upcoming','announce','bdays']:['portal','today','countdown','announce','bdays']}
-  l=l.filter(function(k){return av.indexOf(k)>=0});if(l.indexOf('portal')<0)l.unshift('portal');return l}
+  l=l.filter(function(k){return av.indexOf(k)>=0});if(l.indexOf('portal')<0)l.unshift('portal');if(l.indexOf('bdays')<0&&av.indexOf('bdays')>=0)l.push('bdays');return l}
 function wgSave(l){try{localStorage.setItem(wgKey(),JSON.stringify(l))}catch(e){}}
 function wgSizes(){try{return JSON.parse(localStorage.getItem(wgKey()+'-sz')||'{}')||{}}catch(e){return {}}}
 function wgSizeOf(k){var z=wgSizes()[k];if(z==='s'||z==='m'||z==='l')return z;return k==='portal'&&wgPortalList().length>4?'l':WG_SIZE[k]}
@@ -2321,14 +2321,14 @@ function renderWidgets(up){var v=$('v-home'),l=wgList(),av=wgAvail(),n=l.length;
     if(k==='peulot'&&!(full()||isMrk()))go=null;
     var attrs=k==='todo'?' data-wgtodo="1"':go&&tag==='button'?' data-wggo="'+go+'"':'';
     var head='<div class="wg-h">'+wgIco(k)+'<span>'+t(k==='portal'&&wgPortalList().length>1?'wgPortals':'wg'+k.charAt(0).toUpperCase()+k.slice(1))+'</span>'+(k==='upcoming'||k==='announce'?'<a class="link" style="margin-inline-start:auto;text-transform:none;letter-spacing:0;font-weight:600" href="'+go+'">'+t(k==='upcoming'?'openCal':'allMsgs')+'</a>':'')+'</div>';
-    return '<'+tag+(tag==='button'?' type="button"':'')+' class="wg '+wgSizeOf(k)+(WG_PINK[k]?' pink':'')+(WG_FILL[k]?' '+WG_FILL[k]:'')+'" data-wg="'+k+'"'+attrs+'>'+(k==='portal'?'<span class="wg-lock">'+t('wgAlways')+'</span>':'<span class="wg-x" role="button" tabindex="0" data-wgrm="'+k+'" aria-label="Remove">−</span>')+head+wgBody(k,up,wgSizeOf(k))+'<span class="wg-sz">'+['s','m','l'].map(function(z){return '<span role="button" tabindex="0" data-wgsz="'+k+'|'+z+'"'+(wgSizeOf(k)===z?' class="on"':'')+'>'+t('wgSz_'+z)+'</span>'}).join('')+'</span></'+tag+'>'}).join('');
+    return '<'+tag+(tag==='button'?' type="button"':'')+' class="wg '+wgSizeOf(k)+(WG_PINK[k]?' pink':'')+(WG_FILL[k]?' '+WG_FILL[k]:'')+'" data-wg="'+k+'"'+attrs+'>'+((k==='portal'||k==='bdays')?'<span class="wg-lock">'+t('wgAlways')+'</span>':'<span class="wg-x" role="button" tabindex="0" data-wgrm="'+k+'" aria-label="Remove">−</span>')+head+wgBody(k,up,wgSizeOf(k))+'<span class="wg-sz">'+['s','m','l'].map(function(z){return '<span role="button" tabindex="0" data-wgsz="'+k+'|'+z+'"'+(wgSizeOf(k)===z?' class="on"':'')+'>'+t('wgSz_'+z)+'</span>'}).join('')+'</span></'+tag+'>'}).join('');
   var hid=av.filter(function(k){return l.indexOf(k)<0});
   $('wgAdd').hidden=!wgEditing||!hid.length;$('wgAddList').innerHTML=hid.map(function(k){return '<button type="button" data-wgadd="'+k+'">'+wgIco(k)+'<span>'+t('wg'+k.charAt(0).toUpperCase()+k.slice(1))+'</span></button>'}).join('');
   $('wgEdit').textContent=t(wgEditing?'wgDone':'wgEdit');$('wgHint').hidden=!wgEditing}
 document.addEventListener('click',function(ev){var el=ev.target.closest&&ev.target.closest('[data-wgrm],[data-wgsz],[data-wgadd],#wgEdit,[data-wggo],[data-wgtodo]');if(!el)return;
   if(el.id==='wgEdit'){wgEditing=!wgEditing;wgFlip(renderHome);if(!wgEditing)scrollTo({top:0,behavior:'smooth'});return}
   var l=wgList(),k;
-  if((k=el.dataset.wgrm)){ev.stopPropagation();ev.preventDefault();wgSave(l.filter(function(x){return x!==k}));wgFlip(renderHome);return}
+  if((k=el.dataset.wgrm)){if(k==='portal'||k==='bdays')return;ev.stopPropagation();ev.preventDefault();wgSave(l.filter(function(x){return x!==k}));wgFlip(renderHome);return}
   if((k=el.dataset.wgsz)){ev.stopPropagation();ev.preventDefault();var q=k.split('|');wgSetSize(q[0],q[1]);wgFlip(renderHome);return}
   if((k=el.dataset.wgmv)){ev.stopPropagation();ev.preventDefault();var p=k.split('|'),i=l.indexOf(p[0]),j=i+(+p[1]);if(i<0||j<0||j>=l.length)return;l.splice(i,1);l.splice(j,0,p[0]);wgSave(l);wgFlip(renderHome);return}
   if((k=el.dataset.wgadd)){l.push(k);wgSave(l);wgFlip(renderHome);return}
