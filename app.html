@@ -226,7 +226,8 @@ button.wg,a.wg{cursor:pointer;text-decoration:none}
 #tabs button.menu-portal:hover{background:rgba(0,0,0,.04)}
 #tabs button.menu-portal i{width:22px;height:22px;border-radius:7px;background:var(--mint-soft,#eef5f1);flex:none}
 #tabs button.menu-portal:nth-of-type(even) i{background:var(--pink-soft,#fbe9ef)}
-.view:not([hidden]){animation:viewIn .32s cubic-bezier(.2,.7,.2,1) both}
+.view:not([hidden]){animation:viewIn .32s cubic-bezier(.2,.7,.2,1) backwards}
+#v-messages:not([hidden]){animation-name:fadeIn}
 @keyframes viewIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 /* Smooth transitions everywhere: sections fade in when they appear, popups glide up and fade out */
 @keyframes softIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
@@ -234,7 +235,7 @@ button.wg,a.wg{cursor:pointer;text-decoration:none}
 @keyframes sheetUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
 @keyframes fadeOut{to{opacity:0}}
 @keyframes sheetDown{to{opacity:0;transform:translateY(24px)}}
-#gTiles,#v-group .gpane,#settingsView .spane,#settingsView .set-home,#attSheetPane:not([hidden]),#attReportPane:not([hidden]),#attChartPane:not([hidden]),#dayEvents,#calBack:not([hidden]){animation:softIn .26s cubic-bezier(.2,.7,.2,1) both}
+#gTiles,#v-group .gpane,#settingsView .spane,#settingsView .set-home,#attSheetPane:not([hidden]),#attReportPane:not([hidden]),#attChartPane:not([hidden]),#dayEvents,#calBack:not([hidden]){animation:softIn .26s cubic-bezier(.2,.7,.2,1) backwards}
 .cal-fade{animation:fadeIn .24s ease both}
 .edit-sheet,.att-sheet:not([hidden]){animation:fadeIn .2s ease both}
 .edit-sheet>.edit-box,.att-sheet:not([hidden])>*{animation:sheetUp .3s cubic-bezier(.2,.8,.2,1) both}
@@ -975,6 +976,16 @@ body.on-messages #lgTitle,body.on-messages #v-messages>.page-help,body.on-messag
 body.on-messages{overflow:hidden}
 body.on-messages #v-messages .chat{position:fixed;top:var(--hdr,64px);left:0;right:0;bottom:0;height:auto!important;min-height:0!important;max-width:none!important;margin:0!important;border:0!important;border-radius:0!important;z-index:4;padding-bottom:env(safe-area-inset-bottom,0px)}
 body.on-messages #v-messages .chat-body{padding-inline:max(16px,calc((100vw - 860px)/2))}
+/* Nov 20: Chen Announcements — no header bar, centered black title, thin black frame */
+body.on-messages #v-messages .chat{top:calc(var(--hdr,64px) + 4px)!important;left:10px!important;right:10px!important;bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;padding-bottom:0!important;border:1.5px solid #161816!important;border-radius:28px!important;background:var(--bg)!important;box-shadow:none!important}
+#v-messages .chat-head{justify-content:center;background:transparent;border-bottom:0;padding-block:16px 6px}
+#v-messages .chat-head .chat-icon,#v-messages .chat-head #chatSub{display:none}
+#v-messages .chat-head .grow{flex:none;text-align:center}
+#v-messages .chat-head h2{color:#161816;font-weight:800;font-size:1.3rem;letter-spacing:.01em}
+#v-messages .chat-compose{background:transparent;border-top:0}
+body.on-messages #v-messages .chat{width:auto!important}
+body.kb-open.on-messages #v-messages .chat{bottom:0!important;border-bottom:0!important;border-radius:28px 28px 0 0!important}
+body.kb-open #v-messages .chat-compose{padding-bottom:8px}
 body.on-messages #v-messages .chat-head,body.on-messages #v-messages .chat-compose{padding-inline:max(16px,calc((100vw - 860px)/2))}
 #tabsWrap .tabs a.tab-set{margin-top:10px;position:relative}#tabsWrap .tabs a.tab-set::before{content:'';position:absolute;top:-6px;left:12px;right:12px;border-top:1px solid var(--line)}
 
@@ -2300,6 +2311,8 @@ document.addEventListener('click',function(ev){var b=ev.target.closest&&ev.targe
   document.addEventListener('click',function(ev){if(!ev.target.closest)return;var c=ev.target.closest('#prevM,#nextM,[data-day],[data-cat],#calBack');if(!c)return;
     requestAnimationFrame(function(){['calGrid','monthLabel','dayEvents'].forEach(function(id){var el=$(id);if(!el)return;el.classList.remove('cal-fade');void el.offsetWidth;el.classList.add('cal-fade')})})});
 })();
+/* keyboard open: let the message box sit right on the keyboard */
+(function(){var vv=window.visualViewport;if(!vv)return;var f=function(){var open=innerHeight-vv.height>140&&document.activeElement&&/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName);document.body.classList.toggle('kb-open',!!open)};vv.addEventListener('resize',f);document.addEventListener('focusin',function(){setTimeout(f,350)});document.addEventListener('focusout',function(){setTimeout(f,100)})})();
 function evCard(e){var dt=parseD(e.date),mo=MON[lang][dt.getMonth()],c=evCat(e);
   return '<div class="item ev-c '+c+'" data-evid="'+esc(e.id)+'"><span class="date-badge"><b>'+dt.getDate()+'</b><span>'+(lang==='he'?mo:mo.slice(0,3))+'</span></span><div class="grow"><b>'+esc(e.title)+'</b> <span class="tag">'+esc(aname(e))+'</span><div class="muted small">'+(evRange(e)?esc(evRange(e)):DOWS[lang][dt.getDay()])+(e.time?' · '+tm(e):'')+(e.place?' · '+esc(e.place):'')+'</div>'+(e.notes?'<div class="small">'+esc(e.notes)+'</div>':'')+(can('editEvents')&&!demo||full()?'<span class="geo-acts">'+(e.geo===false?'<span class="muted small">'+t('ciOffSub')+'</span><button type="button" class="geo-link" data-geotg="'+esc(e.id)+'">'+t('ciTurnOn')+'</button>':'<button type="button" class="link small geo-link" data-geoev="'+esc(e.id)+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.1-7-11.5A7 7 0 0 1 19 9.5C19 14.9 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></svg>'+(evGeo(e)?(e.geo&&e.geo.lat?t('ciSpotOn'):t('ciSpotType')):t('ciSpotAdd'))+'</button><button type="button" class="geo-link off" data-geotg="'+esc(e.id)+'">'+t('ciTurnOff')+'</button>')+'</span>':'')+'</div></div>'}
 var INSPO={en:["{n}, chanichim forget the details but remember how you made them feel. Make it a good week.", "Every great peula starts with one small idea, {n}.", "{n}, someone is counting down to Sunday because of you.", "Small things done with heart are what make a shevet, {n}.", "Thanks for showing up, {n}. It matters more than you know.", "{n}, a good team makes a hard week easy. This team is a good one.", "Be prepared, {n}. And then be kind.", "{n}, today is a good day to make someone feel seen.", "Chen grows because people like you keep watering it, {n}.", "{n}, good leading starts with good listening."],he:["{n}, חניכים שוכחים את הפרטים וזוכרים את ההרגשה. שיהיה שבוע טוב.", "כל פעולה גדולה מתחילה ברעיון קטן, {n}.", "{n}, בזכותך מישהו סופר את הימים עד יום ראשון.", "דברים קטנים שנעשים מהלב הם מה שבונה שבט, {n}.", "תודה שאת.ה כאן, {n}. זה משנה יותר ממה שנדמה.", "{n}, צוות טוב הופך שבוע קשה לקל. והצוות הזה טוב.", "{n}, תמיד נכונים. ותמיד עם לב.", "{n}, היום הוא יום טוב לגרום למישהו להרגיש שרואים אותו.", "חן גדל בזכות אנשים כמוך, {n}.", "{n}, הדרכה טובה מתחילה בהקשבה."]};
