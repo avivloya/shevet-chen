@@ -1039,6 +1039,19 @@ button:active,.btn:active,a.item:active,.set-row:active,.gp-tile:active,.pl-tile
 #ptr.spin i{animation:ptrSpin .7s linear infinite}
 @keyframes ptrSpin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){button:active,.btn:active{transform:none}}
+
+/* v66: no overlapping text on phones */
+.wg.s .wg-big.word{font-size:clamp(1.15rem,6.4vw,1.6rem)}.wg-big{max-width:100%;overflow-wrap:anywhere}
+.grow,.grow *{overflow-wrap:anywhere}
+.item>.grow b,.item>.grow .small{overflow-wrap:anywhere;word-break:break-word}
+.item>label,.item>.perm-chips{min-width:0}
+@media (max-width:640px){
+  .item:has(>label)>.grow,.item:has(>select)>.grow,.item:has(.perm-chips)>.grow{flex:1 1 calc(100% - 64px)}
+  .item>label{flex:1 1 100%!important;min-width:0!important}
+  .item>label select,.item>label input{width:100%;box-sizing:border-box}
+  .item>.perm-chips{flex:1 1 100%}
+  .item>span[style*="display:flex"],.item>.confirm{flex-wrap:wrap}
+}
 </style>
 
 <div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i></div>

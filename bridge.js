@@ -62,6 +62,8 @@
 
   firebase.initializeApp(cfg);
   var auth = firebase.auth();
+  // Stay signed in across refreshes, updates and app restarts.
+  try { auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function () {}); } catch (e) {}
   var fs = firebase.firestore();
   if (cfg.emulator) { auth.useEmulator('http://127.0.0.1:9099'); fs.useEmulator('127.0.0.1', 8080); } // local testing only
 
@@ -414,7 +416,9 @@
   document.head.appendChild(fidCss);
 
   // Lock at start if this device has Face ID turned on.
-  var fidLocked = !!fidGet() && !!window.PublicKeyCredential;
+  // A refresh (pull-down, auto-update) in the same session doesn't lock again; opening the app fresh does.
+  var fidFresh = false; try { fidFresh = sessionStorage.getItem('shevet-fid-ok') === '1'; } catch (e) {}
+  var fidLocked = !!fidGet() && !!window.PublicKeyCredential && !fidFresh;
   if (fidLocked) onReady(function () {
     var f = fidGet(), box = document.createElement('div');
     box.id = 'fidLock'; box.dir = HE ? 'rtl' : 'ltr';
@@ -422,7 +426,7 @@
     box.innerHTML = '<div class="lg"></div><button type="button" id="fidGo">' + FT.unlock + '</button><div class="msg" id="fidMsg" role="alert"></div><button type="button" class="alt" id="fidOther">' + FT.other + '</button>';
     if (lg) box.querySelector('.lg').appendChild(lg.cloneNode(true));
     document.body.appendChild(box);
-    function open() { fidLocked = false; box.classList.add('out'); setTimeout(function () { box.remove(); }, 450); }
+    function open() { fidLocked = false; try { sessionStorage.setItem('shevet-fid-ok', '1'); } catch (e) {} box.classList.add('out'); setTimeout(function () { box.remove(); }, 450); }
     function go() {
       document.getElementById('fidMsg').textContent = '';
       fidCheck(f).then(open, function (e) { if (e && e.name !== 'NotAllowedError') console.warn('Face ID', e); document.getElementById('fidMsg').textContent = e && e.name === 'NotAllowedError' ? '' : FT.failed; });

@@ -15,12 +15,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Shevet Chen">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script>window.SHEVET_BUILD='20261120030812';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
+<script>window.SHEVET_BUILD='20261120031208';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=20261120030812"></script>
-<script src="bridge.js?v=20261120030812"></script>
+<script src="firebase-config.js?v=20261120031208"></script>
+<script src="bridge.js?v=20261120031208"></script>
 </head>
 <body>
 <title>Shevet Chen</title>
@@ -1064,6 +1064,19 @@ button:active,.btn:active,a.item:active,.set-row:active,.gp-tile:active,.pl-tile
 #ptr.spin i{animation:ptrSpin .7s linear infinite}
 @keyframes ptrSpin{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){button:active,.btn:active{transform:none}}
+
+/* v66: no overlapping text on phones */
+.wg.s .wg-big.word{font-size:clamp(1.15rem,6.4vw,1.6rem)}.wg-big{max-width:100%;overflow-wrap:anywhere}
+.grow,.grow *{overflow-wrap:anywhere}
+.item>.grow b,.item>.grow .small{overflow-wrap:anywhere;word-break:break-word}
+.item>label,.item>.perm-chips{min-width:0}
+@media (max-width:640px){
+  .item:has(>label)>.grow,.item:has(>select)>.grow,.item:has(.perm-chips)>.grow{flex:1 1 calc(100% - 64px)}
+  .item>label{flex:1 1 100%!important;min-width:0!important}
+  .item>label select,.item>label input{width:100%;box-sizing:border-box}
+  .item>.perm-chips{flex:1 1 100%}
+  .item>span[style*="display:flex"],.item>.confirm{flex-wrap:wrap}
+}
 </style>
 
 <div class="bubbles" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
