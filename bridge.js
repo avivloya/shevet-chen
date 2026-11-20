@@ -65,6 +65,11 @@
   // Stay signed in across refreshes, updates and app restarts.
   try { auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(function () {}); } catch (e) {}
   var fs = firebase.firestore();
+  // Offline: keep a copy of the data on the phone so the app opens with the last info when there's no signal.
+  if (!cfg.emulator) { try { fs.enablePersistence({ synchronizeTabs: true }).catch(function () {}); } catch (e) {} }
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js', { scope: './' }).catch(function () {}); });
+  }
   if (cfg.emulator) { auth.useEmulator('http://127.0.0.1:9099'); fs.useEmulator('127.0.0.1', 8080); } // local testing only
 
   /* ---------- database wrapper ----------
@@ -162,11 +167,14 @@
 
   /* ---------- owner: the first person to sign in after setup ---------- */
   var ownerP = signedIn.then(function (u) {
-    var ref = fs.doc('settings/owner');
+    var ref = fs.doc('settings/owner'), OK = 'shevet-owner-' + u.uid;
+    var saved = function () { try { return localStorage.getItem(OK) === '1'; } catch (e) { return false; } };
+    if (!navigator.onLine) return ref.get({ source: 'cache' }).then(function (s) { return s.exists ? s.data().uid === u.uid : saved(); }, saved);
     return ref.get().then(function (s) {
-      if (s.exists) { var mine = s.data().uid === u.uid; if (mine) topUp(); return mine; }
+      if (s.exists) { var mine = s.data().uid === u.uid; try { localStorage.setItem(OK, mine ? '1' : '0'); } catch (e) {} if (mine && !s.metadata.fromCache) topUp(); return mine; }
+      if (s.metadata && s.metadata.fromCache) return saved();
       return ref.set({ uid: u.uid, claimedAt: Date.now() }).then(function () { seed(); return true; }, function () { return false; });
-    }).catch(function () { return false; });
+    }).catch(saved);
   });
 
   /* owner only, once per seed version: add any starting machsan items / group needs that are missing,
