@@ -15,12 +15,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Shevet Chen">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script>window.SHEVET_BUILD='20261120031448';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
+<script>window.SHEVET_BUILD='20261120031822';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=20261120031448"></script>
-<script src="bridge.js?v=20261120031448"></script>
+<script src="firebase-config.js?v=20261120031822"></script>
+<script src="bridge.js?v=20261120031822"></script>
 </head>
 <body>
 <title>Shevet Chen</title>
@@ -927,7 +927,7 @@ html.warm #splash{transition:opacity .25s ease;z-index:30}
 #v-group .gpane .chat.sm{max-height:none}
 .chat-icon.logo-ic{background:#fff;border:1px solid var(--line);overflow:hidden;padding:0}
 .chat-icon.logo-ic{width:46px;height:46px;color:#111}
-.chat-icon.logo-ic svg{width:44px;height:auto;display:block}
+.chat-icon.logo-ic svg{width:32px;height:auto;display:block;margin-top:1px}
 .chat-icon.logo-ic svg [fill="currentColor"]{stroke:currentColor;stroke-width:3;paint-order:stroke}
 html{-webkit-text-size-adjust:100%;touch-action:manipulation}
 @media(max-width:700px){input,select,textarea{font-size:16px!important}}
