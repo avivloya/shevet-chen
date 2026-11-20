@@ -15,12 +15,12 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Shevet Chen">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script>window.SHEVET_BUILD='20261120184152';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
+<script>window.SHEVET_BUILD='20261120184325';(function(){function chk(){fetch('version.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.json()}).then(function(v){if(!v||!v.build||v.build===window.SHEVET_BUILD)return;var k='shevet-upd-'+v.build;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}location.replace(location.pathname+'?v='+v.build+location.hash)}).catch(function(){})}chk();document.addEventListener('visibilitychange',function(){if(!document.hidden)chk()})})();</script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="firebase-config.js?v=20261120184152"></script>
-<script src="bridge.js?v=20261120184152"></script>
+<script src="firebase-config.js?v=20261120184325"></script>
+<script src="bridge.js?v=20261120184325"></script>
 </head>
 <body>
 <title>Shevet Chen</title>
@@ -696,6 +696,13 @@ input,textarea,select,[contenteditable],[contenteditable] *{-webkit-user-select:
 #v-calendar .sec-head:has(#calBack[hidden]) #dayLabel::after{content:'';width:8px;height:8px;border:solid var(--muted);border-width:0 2px 2px 0;transform:translateY(-3px) rotate(45deg);transition:transform .22s ease}
 #v-calendar.up-closed .sec-head:has(#calBack[hidden]) #dayLabel::after{transform:translateY(1px) rotate(-135deg)}
 #v-calendar.up-closed .sec-head:has(#calBack[hidden])+#dayEvents{display:none}
+/* Voice recording: just a big pink mic, nothing else */
+.chat-input .mic-btn{transition:transform .25s cubic-bezier(.2,.8,.2,1),background-color .2s}
+.chat-input>*:not(.mic-btn){transition:opacity .2s}
+.chat-input.recording>*:not(.mic-btn){opacity:0!important;pointer-events:none}
+.chat-input.recording .rec-bar{display:none!important}
+.chat-compose>*{transition:opacity .2s}.chat-compose:has(.chat-input.recording)>*:not(.chat-input){opacity:0;pointer-events:none}
+.chat-input.recording .mic-btn{background:#ec8fae!important;color:#fff!important;transform:scale(1.55)!important;box-shadow:0 6px 18px rgba(236,143,174,.45)}
 .heart-pop{position:fixed;z-index:120;font-size:54px;pointer-events:none;transform:translate(-50%,-50%) scale(.3);animation:heartPop .7s ease forwards}
 @keyframes heartPop{30%{transform:translate(-50%,-50%) scale(1.15);opacity:1}70%{transform:translate(-50%,-60%) scale(1);opacity:1}100%{transform:translate(-50%,-90%) scale(.9);opacity:0}}
 #gTasks .task{position:relative;background:var(--surface);will-change:transform}#gTasks .task.sw-go{box-shadow:inset 0 0 0 2px var(--green)}
